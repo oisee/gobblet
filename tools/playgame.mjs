@@ -20,8 +20,9 @@ function posKey(s) {
   return b + '#' + h + '#' + s.turn;
 }
 
-// white/black — ключи уровней. Возвращает запись партии для базы.
-export function playGame({ variantId, white, black, seed = 1, maxPlies = 300 }) {
+// white/black — ключи уровней. openingPlies — сколько первых полуходов сыграть случайно
+// (диверсификация дебютов). Возвращает запись партии для базы.
+export function playGame({ variantId, white, black, seed = 1, maxPlies = 300, openingPlies = 0 }) {
   const v = VARIANTS[variantId];
   const s = newGame(v);
   const rng = mulberry32(seed >>> 0);
@@ -32,7 +33,9 @@ export function playGame({ variantId, white, black, seed = 1, maxPlies = 300 }) 
   let result = 'draw';
   while (moves.length < maxPlies) {
     const mover = s.turn;
-    const mv = pickMove(s, levels[mover], rng);
+    // первые openingPlies полуходов — равномерно случайные (balbes = 100% рандом)
+    const level = moves.length < openingPlies ? 'balbes' : levels[mover];
+    const mv = pickMove(s, level, rng);
     if (!mv) break;                    // ходов нет — ничья (safety)
     const san = moveCompact(s, mv);
     applyMove(s, mv);
@@ -43,7 +46,7 @@ export function playGame({ variantId, white, black, seed = 1, maxPlies = 300 }) 
     if (c >= 3) break;                 // троекратное повторение — ничья
   }
   return {
-    variant: variantId, white, black, seed,
+    variant: variantId, white, black, seed, openingPlies,
     result, winner: result === 'white' ? 0 : result === 'black' ? 1 : null,
     plies: moves.length, moves: moves.join(' '),
   };

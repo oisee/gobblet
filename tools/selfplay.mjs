@@ -1,11 +1,12 @@
 // Batch self-play: гоняет пары уровней (в обе стороны) в несколько потоков,
 // пишет базу партий (JSON) и печатает ранжирование + перекос по цвету.
 //
-//   node tools/selfplay.mjs --variant=classic4 --levels=club,medium,hard --games=1
-//   node tools/selfplay.mjs --levels=novice,student,club,medium,hard --games=8 --concurrency=8
+//   node tools/selfplay.mjs --levels=club,medium,hard --games=8 --concurrency=8
+//   node tools/selfplay.mjs --levels=club,medium,hard --openingPlies=4 --minutes=60
 //
-// Флаги: --variant, --levels (через запятую), --games (партий на упорядоченную пару),
-//        --concurrency, --seed, --maxPlies, --out=<path>
+// Флаги: --variant, --levels, --games (партий на пару в режиме без времени),
+//        --minutes (гонять по времени, а не фикс. число), --openingPlies (случайный дебют),
+//        --concurrency, --seed, --maxPlies, --out
 import { Worker } from 'node:worker_threads';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -16,14 +17,13 @@ import { AI_LEVELS, LEVEL_ORDER } from '../src/players.js';
 const here = dirname(fileURLToPath(import.meta.url));
 
 function parseArgs(argv) {
-  const a = { variant: 'classic4', levels: 'club,medium,hard', games: 1, seed: 1, maxPlies: 300 };
-  for (const s of argv) {
-    const m = /^--([^=]+)=(.*)$/.exec(s);
-    if (m) a[m[1]] = m[2];
-  }
+  const a = { variant: 'classic4', levels: 'club,medium,hard', games: 1, seed: 1, maxPlies: 300, openingPlies: 0, minutes: 0 };
+  for (const s of argv) { const m = /^--([^=]+)=(.*)$/.exec(s); if (m) a[m[1]] = m[2]; }
   a.games = Math.max(1, parseInt(a.games, 10) || 1);
   a.seed = parseInt(a.seed, 10) || 1;
   a.maxPlies = parseInt(a.maxPlies, 10) || 300;
+  a.openingPlies = parseInt(a.openingPlies, 10) || 0;
+  a.minutes = parseFloat(a.minutes) || 0;
   a.levelList = String(a.levels).split(',').map(s => s.trim()).filter(Boolean);
   a.concurrency = a.concurrency ? Math.max(1, parseInt(a.concurrency, 10)) : Math.max(1, (os.availableParallelism?.() || os.cpus().length) - 1);
   return a;
@@ -31,41 +31,51 @@ function parseArgs(argv) {
 
 const isDeterministic = (lvl) => { const L = AI_LEVELS[lvl]; return L && !L.tactical && !(L.random > 0); };
 
-function buildTasks(args) {
-  const tasks = [];
+// Пары уровней (обе стороны).
+function pairs(levels) { const out = []; for (const w of levels) for (const b of levels) out.push([w, b]); return out; }
+
+// Генератор заданий: по времени (minutes) — бесконечно; иначе — фикс. число.
+function makeNextTask(args) {
+  const ps = pairs(args.levelList);
   let idx = 0;
-  for (const white of args.levelList) {
-    for (const black of args.levelList) {
-      // детерминированная пара воспроизводит одну и ту же партию — хватит 1 игры
-      const n = (isDeterministic(white) && isDeterministic(black)) ? 1 : args.games;
-      for (let g = 0; g < n; g++) {
-        tasks.push({ variantId: args.variant, white, black, seed: args.seed + idx, maxPlies: args.maxPlies });
-        idx++;
-      }
-    }
+  if (args.minutes > 0) {
+    const deadline = Date.now() + args.minutes * 60000;
+    return () => {
+      if (Date.now() >= deadline) return null;
+      const [white, black] = ps[idx % ps.length];
+      const task = { variantId: args.variant, white, black, seed: args.seed + idx, maxPlies: args.maxPlies, openingPlies: args.openingPlies };
+      idx++;
+      return task;
+    };
   }
-  return tasks;
+  // фикс: список; детерминированные пары без случайного дебюта — 1 партия
+  const tasks = [];
+  for (const [white, black] of ps) {
+    const n = (args.openingPlies === 0 && isDeterministic(white) && isDeterministic(black)) ? 1 : args.games;
+    for (let g = 0; g < n; g++) { tasks.push({ variantId: args.variant, white, black, seed: args.seed + tasks.length, maxPlies: args.maxPlies, openingPlies: args.openingPlies }); }
+  }
+  let k = 0;
+  const nt = () => (k < tasks.length ? tasks[k++] : null);
+  nt.total = tasks.length;
+  return nt;
 }
 
-function runPool(tasks, concurrency) {
-  const results = new Array(tasks.length);
-  let next = 0, done = 0;
+function runPool(nextTask, concurrency, onProgress) {
+  const results = [];
   return new Promise((resolve, reject) => {
-    const n = Math.min(concurrency, tasks.length) || 1;
-    let alive = n;
-    for (let i = 0; i < n; i++) {
+    let alive = concurrency;
+    for (let i = 0; i < concurrency; i++) {
       const w = new Worker(join(here, 'selfplay-worker.mjs'));
       const feed = () => {
-        if (next >= tasks.length) { w.terminate(); if (--alive === 0) resolve(results); return; }
-        const my = next++;
+        const task = nextTask();
+        if (!task) { w.terminate(); if (--alive === 0) resolve(results); return; }
         w.once('message', (msg) => {
           if (!msg.ok) { reject(new Error(msg.error)); w.terminate(); return; }
-          results[my] = msg.result;
-          done++;
-          if (done % 25 === 0 || done === tasks.length) process.stdout.write(`\r  сыграно ${done}/${tasks.length}   `);
+          results.push(msg.result);
+          onProgress(results.length);
           feed();
         });
-        w.postMessage(tasks[my]);
+        w.postMessage(task);
       };
       feed();
     }
@@ -90,55 +100,33 @@ function pct(x, n) { return n ? (100 * x / n).toFixed(0).padStart(3) + '%' : '  
 
 function report(games, args) {
   const levels = args.levelList;
-  // общий перекос по цвету
   let W = 0, B = 0, D = 0;
-  // на игрока: как белые / как чёрные {w,d,l}
-  const stat = {};
-  levels.forEach(l => (stat[l] = { wW: 0, wD: 0, wL: 0, bW: 0, bD: 0, bL: 0 }));
-  // матрица: белые(строка) × чёрные(колонка) — очки белых
-  const h2h = {};
-  levels.forEach(a => { h2h[a] = {}; levels.forEach(b => (h2h[a][b] = { s: 0, n: 0 })); });
-
+  const stat = {}; levels.forEach(l => (stat[l] = { wW: 0, wD: 0, wL: 0, bW: 0, bD: 0, bL: 0 }));
+  const h2h = {}; levels.forEach(a => { h2h[a] = {}; levels.forEach(b => (h2h[a][b] = { s: 0, n: 0 })); });
   for (const g of games) {
     if (g.result === 'white') W++; else if (g.result === 'black') B++; else D++;
     const sw = g.result === 'white' ? 1 : g.result === 'draw' ? 0.5 : 0;
     const sW = stat[g.white], sB = stat[g.black];
-    if (g.result === 'white') { sW.wW++; sB.bL++; }
-    else if (g.result === 'black') { sW.wL++; sB.bW++; }
-    else { sW.wD++; sB.bD++; }
+    if (g.result === 'white') { sW.wW++; sB.bL++; } else if (g.result === 'black') { sW.wL++; sB.bW++; } else { sW.wD++; sB.bD++; }
     const cell = h2h[g.white][g.black]; cell.s += sw; cell.n++;
   }
-
   const elo = computeElo(games, levels);
   const total = games.length;
-
-  console.log(`\n\n=== Gobblet self-play · ${args.variant} · ${total} партий ===`);
+  console.log(`\n\n=== Gobblet self-play · ${args.variant} · ${total} партий · дебют ${args.openingPlies} случайных полуходов ===`);
   console.log(`Перекос по цвету:  Белые ${pct(W, total)}   Чёрные ${pct(B, total)}   Ничьи ${pct(D, total)}\n`);
-
-  // таблица игроков
   const rows = levels.map(l => {
     const s = stat[l];
-    const wN = s.wW + s.wD + s.wL, bN = s.bW + s.bD + s.bL;
-    const score = s.wW + s.bW + 0.5 * (s.wD + s.bD), n = wN + bN;
-    return { l, elo: Math.round(elo[l]), n, winPct: pct(s.wW + s.bW, n), wWhite: pct(s.wW, wN), wBlack: pct(s.bW, bN), score };
+    const wN = s.wW + s.wD + s.wL, bN = s.bW + s.bD + s.bL, n = wN + bN;
+    return { l, elo: Math.round(elo[l]), n, winPct: pct(s.wW + s.bW, n), wWhite: pct(s.wW, wN), wBlack: pct(s.bW, bN) };
   }).sort((a, b) => b.elo - a.elo);
-
   console.log('Уровень      Elo   партий   победы  как белые  как чёрные');
   console.log('─'.repeat(60));
-  for (const r of rows) {
-    console.log(`${r.l.padEnd(10)}  ${String(r.elo).padStart(4)}   ${String(r.n).padStart(6)}    ${r.winPct}     ${r.wWhite}      ${r.wBlack}`);
-  }
-
-  // head-to-head (очки белых в %)
+  for (const r of rows) console.log(`${r.l.padEnd(10)}  ${String(r.elo).padStart(4)}   ${String(r.n).padStart(6)}    ${r.winPct}     ${r.wWhite}      ${r.wBlack}`);
   console.log('\nHead-to-head (очки БЕЛЫХ, строка=белые, колонка=чёрные):');
-  const hdr = '            ' + levels.map(l => l.slice(0, 6).padStart(7)).join('');
-  console.log(hdr);
+  console.log('            ' + levels.map(l => l.slice(0, 6).padStart(7)).join(''));
   for (const a of levels) {
     let line = a.padEnd(11) + ' ';
-    for (const b of levels) {
-      const c = h2h[a][b];
-      line += (c.n ? (100 * c.s / c.n).toFixed(0) + '%' : '·').padStart(7);
-    }
+    for (const b of levels) { const c = h2h[a][b]; line += (c.n ? (100 * c.s / c.n).toFixed(0) + '%' : '·').padStart(7); }
     console.log(line);
   }
 }
@@ -148,10 +136,19 @@ async function main() {
   const bad = args.levelList.filter(l => !LEVEL_ORDER.includes(l));
   if (bad.length) { console.error('Неизвестные уровни:', bad.join(', '), '\nДоступно:', LEVEL_ORDER.join(', ')); process.exit(1); }
 
-  const tasks = buildTasks(args);
-  console.log(`Уровни: ${args.levelList.join(', ')} · пар: ${args.levelList.length ** 2} · заданий: ${tasks.length} · потоков: ${args.concurrency}`);
+  const nextTask = makeNextTask(args);
+  const budget = args.minutes > 0 ? `по времени ${args.minutes} мин` : `заданий ${nextTask.total}`;
+  console.log(`Уровни: ${args.levelList.join(', ')} · пар: ${args.levelList.length ** 2} · ${budget} · потоков: ${args.concurrency} · дебют: ${args.openingPlies}`);
   const t0 = Date.now();
-  const games = await runPool(tasks, args.concurrency);
+  let lastPrint = 0;
+  const games = await runPool(nextTask, args.concurrency, (done) => {
+    const now = Date.now();
+    if (now - lastPrint > 2000 || (!args.minutes && done === nextTask.total)) {
+      lastPrint = now;
+      const mins = ((now - t0) / 60000).toFixed(1);
+      process.stdout.write(`\r  сыграно ${done}${args.minutes ? '' : '/' + nextTask.total}   (${mins} мин)      `);
+    }
+  });
   const secs = ((Date.now() - t0) / 1000).toFixed(1);
 
   const ts = Date.now();
@@ -160,7 +157,7 @@ async function main() {
   await writeFile(outPath, JSON.stringify({ meta: { ...args, levelList: undefined, count: games.length, seconds: +secs, ts }, games }));
 
   report(games, args);
-  console.log(`\nВремя: ${secs}s · база: ${outPath}\n`);
+  console.log(`\nВремя: ${secs}s · партий: ${games.length} · база: ${outPath}\n`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
