@@ -16,7 +16,8 @@ published by **Blue Orange Games**. The game design, the names *Gobblet* /
 respective owners (Thierry Denoual / Blue Orange Games).
 
 - Publisher: https://www.blueorangegames.com/
-- Game entry: https://boardgamegeek.com/boardgame/13111/gobblet
+- Gobblet on BoardGameGeek: https://boardgamegeek.com/boardgame/2266/gobblet
+- Gobblet Gobblers on BoardGameGeek: https://boardgamegeek.com/boardgame/13111/gobblet-gobblers
 
 This repository is an **unofficial, non-commercial, educational fan implementation**.
 It is **not affiliated with, endorsed by, or sponsored by** Thierry Denoual or Blue
