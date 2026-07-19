@@ -1,100 +1,130 @@
 # Gobblet
 
-Настольная игра Gobblet. Сейчас реализован вариант **Gobblers 3×3** (hotseat и против ИИ).
-Движок параметризован — вариант **Classic 4×4** добавляется конфигом.
+A web implementation of the abstract strategy game **Gobblet**, plus a headless
+self-play toolkit for generating game databases and extracting opening heuristics.
 
-## Два способа запуска
+Two variants share one parameterized engine:
 
-**1. Разработка (ES-модули + dev-сервер):**
+- **Gobblers 3×3** — the lighter version (board 3×3, three in a row).
+- **Classic 4×4** — the full game (board 4×4, four in a row).
+
+## Attribution & disclaimer
+
+**Gobblet** and **Gobblet Gobblers** were designed by **Thierry Denoual** and are
+published by **Blue Orange Games**. The game design, the names *Gobblet* /
+*Gobblet Gobblers*, and all related trademarks and copyrights belong to their
+respective owners (Thierry Denoual / Blue Orange Games).
+
+- Publisher: https://www.blueorangegames.com/
+- Game entry: https://boardgamegeek.com/boardgame/13111/gobblet
+
+This repository is an **unofficial, non-commercial, educational fan implementation**.
+It is **not affiliated with, endorsed by, or sponsored by** Thierry Denoual or Blue
+Orange Games. **We claim no rights** to the Gobblet game, its name, or its trademarks —
+only to our own source code in this repo. If you enjoy the game, buy the physical set.
+
+## Running the game
+
+**1. Development (ES modules + dev server):**
 
 ```bash
 npm run dev        # http://localhost:5173
 ```
 
-Код разбит на модули в `src/` — удобно поддерживать и тестировать.
+The code is split into small modules under `src/` — easy to maintain and test.
 
-**2. Монофайл (один самодостаточный HTML):**
+**2. Single self-contained file:**
 
 ```bash
 npm run build      # -> dist/gobblet.html
 ```
 
-`dist/gobblet.html` — всё (CSS + JS) инлайнено в один файл. Открывается двойным
-кликом, без сервера и зависимостей. Именно его удобно кому-то отправить или залить статикой.
+`dist/gobblet.html` inlines all CSS + JS into one file. Opens with a double-click,
+no server and no dependencies. There is **no `npm install`** — the project has zero
+runtime dependencies.
 
-> Оба способа не требуют `npm install` — зависимостей нет вообще.
-
-## Структура
+## Project layout
 
 ```
 src/
-  variants.js   конфиг вариантов (VARIANTS) — единственное место с параметрами игры
-  engine.js     движок: ходы, легальность, победа, клонирование (чистые функции, без DOM)
-  notation.js   нотация ходов/полей (a1, S/M/L/X, +/++/#)
-  ai.js         ИИ на alpha-beta (+ PV, оценка)
-  players.js    политика уровней ИИ (pickMove) — общая для UI и headless
-  i18n.js       локализация (t, LOCALES) — en/ru готовы, остальные заготовки
-  ui.js         рендер + ввод (drag&drop, клики, undo, анализ, тренер)
-  main.js       точка входа
+  variants.js   variant configs (VARIANTS) — the only place with game parameters
+  engine.js     engine: moves, legality, win, cloning, symmetry canonicalKey (pure, no DOM)
+  notation.js   move/square notation (a1, S/M/L/X, +/++/#)
+  ai.js         alpha-beta AI (+ principal variation, evaluation)
+  players.js    AI level policy (pickMove) — shared by UI and headless tools
+  i18n.js       localization (t, LOCALES) — English & Russian ready, others stubbed
+  ui.js         rendering + input (drag&drop, hints, analysis, coach, undo)
+  main.js       entry point
   styles.css
-index.html      DEV-страница (грузит модули)
-build.mjs       сериализатор модулей -> dist/gobblet.html
-serve.mjs       крошечный статический сервер
-tools/          headless-инструменты (без сборки в html)
+index.html      dev page (loads modules)
+build.mjs       module serializer -> dist/gobblet.html
+serve.mjs       tiny static server
+tools/          headless tools (no html build)
+docs/           strategy notes and reports
 ```
 
-## Headless self-play и база партий
+## In-game assistant
 
-Движок DOM-независимый, поэтому компьютер против компьютера гоняется в потоках без браузера.
+A four-state **Assistant** dropdown:
+
+- **Off**
+- **Rating** — a live evaluation bar on the side.
+- **Analysis** — the bar plus best continuation lines (iterative deepening).
+- **Coach** — analysis plus on-board arrows / ghost placement for the best moves,
+  and feedback on your own move (warns and offers to reconsider a weakening move).
+
+Other features: **hints** with arrows, **game record** with copy-to-clipboard,
+**undo**, **draw by threefold repetition**, board coordinate labels, and a **settings**
+panel (theme, piece labels `S M L X` vs `1 2 3 4`, per-player computer level, language).
+
+Opponents: **Human**, **Computer**, or **Computer vs Computer** (independent levels
+with Play/Pause).
+
+## Notation
+
+Chess-style, shown in the game record.
+
+- **Squares:** files `a,b,c(,d)` left→right, ranks `1..N` bottom→top (`a1` bottom-left).
+- **Sizes:** `S < M < L < X`.
+- **Moves:** `Lc3` — from reserve; `c3-d4` — a board move; `x` — a cover (`Lxc3`, `c3xd4`).
+- **Annotations:** `+` check (threatens a line), `++` double check (fork), `#` win.
+
+## AI levels
+
+`balbes` (100% random) · `novice` (50% random) · `amateur` (reactive tactics:
+grabs wins, blocks checks) · `student` (club + 20% slips) · `club` (depth 2) ·
+`medium` (depth 3) · `hard` (max depth).
+
+## Headless self-play & databases
+
+The engine is DOM-free, so computer-vs-computer runs in worker threads without a browser.
 
 ```bash
-# турнир пар уровней (в обе стороны), N партий на пару, в несколько потоков
+# tournament over level pairs (both colors), N games per pair, multithreaded
 npm run selfplay -- --variant=classic4 --levels=club,medium,hard --games=8 --concurrency=8
+
+# time budget + randomized opening (diversifies otherwise-deterministic pairs)
+node tools/selfplay.mjs --levels=student,club,medium,hard --openingPlies=4 --minutes=60
 ```
 
-Пишет базу в `data/selfplay-<variant>-<ts>.json` и печатает: **Elo-ранжирование**,
-win% **как белые / как чёрные**, перекос по цвету и **head-to-head** матрицу.
-Уровни: `balbes novice amateur student club medium hard`. Партии воспроизводимы по сиду
-(детерминированные пары играются один раз).
+Writes a database to `data/selfplay-<variant>-<ts>.json` and prints an **Elo ranking**,
+win% **as white / as black**, color bias, and a **head-to-head** matrix. Games are
+reproducible by seed.
 
 ```bash
-# пост-анализ базы: где сломалась партия (решающий зевок), на максимальной глубине
-node tools/analyze-db.mjs data/selfplay-classic4-<ts>.json --decisive --limit=10
+# opening book: canonical (rotation/mirror) opening tree with win rates
+node tools/openbook.mjs data/<db>.json --plies=6 --top=3 --min=30 --only=medium,hard
+
+# post-analysis: the decisive blunder per game, at max search depth
+node tools/analyze-db.mjs data/<db>.json --decisive --limit=10
+
+# overnight generator (auto-detects cores, chunked, resilient)
+bash tools/overnight.sh 600 student,club,medium,hard 4 45
 ```
 
-## Правила (Gobblers 3×3)
+## Notes
 
-- Доска 3×3. У каждого игрока 6 фишек: 3 размера по 2 штуки.
-- За ход: поставить фишку из резерва **или** переместить свою верхнюю фишку с доски.
-- Больший размер накрывает («гоблит») меньший — свой или чужой.
-- Снял фишку — открылось то, что было под ней.
-- Победа: 3 своих верхних фишки в ряд (строка, столбец, диагональ).
-- Если ход **вскрывает** линию соперника — при отсутствии своей победы выигрывает соперник.
-
-## Режим подсказок
-
-Кнопка **💡 Подсказка** подсвечивает два лучших хода текущего игрока (ранжируются
-тем же alpha-beta поиском): золотой — ход №1, голубой — №2. На доске отмечается
-клетка назначения (с номером) и, для хода фишкой с доски, клетка-источник; для хода
-из резерва подсвечивается нужная фишка. Панель под доской показывает развёрнутое
-описание, **оценку хода** и **ожидаемый ответ соперника** (на 2 хода вперёд).
-
-## Нотация партии
-
-Шахматного стиля, ведётся в панели «Запись партии» в две колонки.
-
-- **Поля:** файлы `a,b,c(,d)` слева направо, ранги `1..N` снизу вверх (`a1` — нижний левый).
-- **Размеры:** `S < M < L < XL`.
-- **Ходы:** `Lc3` — из резерва на c3; `c3-d4` — перестановка; `x` — накрытие (`Lxc3`, `c3xd4`).
-- **Аннотации:** `+` шах (грозит достроить линию), `++` двойной шах (форк), `#` победа.
-
-Индикатор шаха также показывается в строке статуса.
-
-## Дорожная карта
-
-- [x] Движок 3×3, hotseat, ИИ, drag&drop, undo, монофайл-сборка
-- [x] Classic 4×4: стопки-резерв (доступна верхняя), спец-правило накрытия из резерва
-- [x] Режим подсказок (топ-2 хода)
-- [ ] Unit-тесты движка (перенести smoke-тесты в `test/` + `node --test`)
-- [ ] Анимация перемещения фишек
-- [ ] Онлайн-мультиплеер (WebSocket) — потребует backend
+- `canonicalKey` (engine) collapses the 8 board symmetries (D4 group: rotations +
+  mirrors) so equivalent positions map to one key — useful for opening books and,
+  later, transposition tables / solving.
+- Draw/repetition and opening heuristics are documented in `docs/`.
