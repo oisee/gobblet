@@ -1,0 +1,205 @@
+:root{
+  --bg:#0f1419;
+  --panel:#1a212b;
+  --panel-2:#232c38;
+  --line:#334155;
+  --text:#e5edf5;
+  --muted:#8ea0b5;
+  --accent:#6ea8fe;
+  --p0:#ef5350;      /* красный игрок */
+  --p0-d:#b71c1c;
+  --p1:#42a5f5;      /* синий игрок */
+  --p1-d:#0d47a1;
+  --good:#34d399;
+  --cell:#2b3646;
+  --cell-hi:#3a4a63;
+  --legal:#2e5b3f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:radial-gradient(1200px 800px at 50% -10%, #17202b, var(--bg));
+  color:var(--text);
+  font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100%;
+  -webkit-user-select:none;user-select:none;
+  padding:16px;
+}
+h1{font-size:22px;margin:4px 0 2px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+.app{width:100%;max-width:600px;display:flex;flex-direction:column;gap:14px}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.toolbar label{color:var(--muted);font-size:12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+
+.settings{display:none;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.settings.open{display:flex}
+.settings label{color:var(--muted);font-size:13px;display:flex;gap:8px;align-items:center}
+.settings select{font-size:13px}
+select,button{
+  background:var(--panel-2);color:var(--text);border:1px solid var(--line);
+  border-radius:8px;padding:6px 9px;font-size:13px;cursor:pointer;
+}
+select:disabled{opacity:.4;cursor:default}
+button:hover,select:hover{border-color:var(--accent)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.4;cursor:default}
+
+.status{
+  display:flex;align-items:center;gap:10px;justify-content:center;
+  padding:10px 14px;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;font-weight:600;min-height:46px;text-align:center;
+}
+.turn-dot{width:16px;height:16px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+
+.rack{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:12px;display:flex;align-items:center;gap:12px;justify-content:space-between;
+  transition:box-shadow .2s,border-color .2s;
+}
+.rack.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(110,168,254,.25)}
+.rack .who{font-weight:700;font-size:13px;width:64px;flex:0 0 auto}
+.rack .piles{display:flex;gap:14px;flex-wrap:wrap;flex:1;justify-content:center}
+.pile{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pile .count{font-size:12px;color:var(--muted)}
+.pile-empty{width:40px;height:40px;border-radius:50%;border:2px dashed var(--line);opacity:.5}
+
+.playfield{display:flex;gap:12px;align-items:stretch}
+.board-area{flex:1 1 auto;min-width:0;display:grid;
+  grid-template-columns:16px 1fr;grid-template-rows:auto 16px;gap:4px}
+.board-area .board{grid-column:2;grid-row:1}
+.ranks{grid-column:1;grid-row:1;display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.files{grid-column:2;grid-row:2;display:flex;justify-content:space-around;align-items:center}
+.corner{grid-column:1;grid-row:2}
+.ranks span,.files span{font-size:11px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+.board{
+  display:grid;gap:10px;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:14px;position:relative;
+  aspect-ratio:1/1;min-width:0;
+}
+.board svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.side{flex:0 0 128px;display:flex;flex-direction:column}
+@media (max-width:520px){ .playfield{flex-direction:column} .side{flex-basis:auto} }
+.cell{
+  background:var(--cell);border-radius:12px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,box-shadow .15s;
+}
+.cell.legal{background:var(--legal);box-shadow:inset 0 0 0 2px rgba(52,211,153,.6);cursor:pointer}
+.cell.legal:hover{background:#3a6f4d}
+.cell.selsrc{box-shadow:inset 0 0 0 2px var(--accent)}
+.cell.win{box-shadow:inset 0 0 0 3px var(--good);background:#204a37}
+/* подсказки: ход №1 — золото, №2 — голубой */
+.cell.hintto.hint1{box-shadow:inset 0 0 0 3px #f5c542}
+.cell.hintto.hint2{box-shadow:inset 0 0 0 3px #6ea8fe}
+.cell.hintfrom{box-shadow:inset 0 0 0 2px rgba(245,197,66,.5)}
+.cell .hintbadge{
+  position:absolute;top:4px;left:6px;font-size:12px;font-weight:800;color:#0f1419;
+  background:#f5c542;border-radius:50%;width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+}
+.cell.hint2 .hintbadge{background:#6ea8fe}
+.piece.hintpiece.hint1{outline:3px solid #f5c542;outline-offset:2px}
+.piece.hintpiece.hint2{outline:3px solid #6ea8fe;outline-offset:2px}
+
+.cell .stackbadge{
+  position:absolute;top:5px;right:7px;font-size:11px;color:#fff;opacity:.7;
+  background:rgba(0,0,0,.35);border-radius:8px;padding:0 5px;pointer-events:none;
+}
+
+.piece{
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;
+  box-shadow:0 3px 6px rgba(0,0,0,.35), inset 0 2px 4px rgba(255,255,255,.35), inset 0 -6px 10px rgba(0,0,0,.25);
+  cursor:grab;transition:transform .1s;
+}
+.piece:active{cursor:grabbing}
+.piece.p0{background:radial-gradient(circle at 35% 30%, #ff8a80, var(--p0) 55%, var(--p0-d));}
+.piece.p1{background:radial-gradient(circle at 35% 30%, #90caf9, var(--p1) 55%, var(--p1-d));}
+.piece.sel{box-shadow:0 0 0 3px var(--accent), 0 3px 6px rgba(0,0,0,.35);transform:scale(1.05)}
+.piece.dimmed{opacity:.35;cursor:default}
+.piece.dragging{opacity:.5}
+/* призрак хода-постановки из резерва */
+.piece.ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  pointer-events:none;opacity:.5;box-shadow:none;
+  outline:2px dashed rgba(255,255,255,.75);outline-offset:-1px;z-index:2}
+.piece.ghost.hint2{outline-color:#6ea8fe}
+.piece.ghost.hint1{outline-color:#f5c542}
+
+/* палитра «как в шахматах»: белые (бежевые) / чёрные — для 4×4 */
+.pal-bw{ --p0:#d8c19a; --p1:#aeb6c1; }
+.pal-bw .piece.p0{background:radial-gradient(circle at 34% 28%, #fffaf0, #ece0c6 55%, #cdbd94);color:#4a4030}
+.pal-bw .piece.p1{background:radial-gradient(circle at 34% 28%, #737b86, #262b31 58%, #0c0e11);color:#eef1f4}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.panel-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mini-btn{font-size:11px;padding:4px 10px;border-radius:7px;text-transform:none;letter-spacing:0}
+
+/* баннер тренера */
+.coachbar{display:flex;align-items:center;gap:12px;justify-content:space-between;
+  background:color-mix(in srgb,#f5c542 14%,var(--panel));border:1px solid #f5c542;border-radius:12px;padding:10px 14px}
+.cw-text{font-size:13.5px;font-weight:600}
+.cw-btn{flex:0 0 auto;background:#f5c542;color:#0f1419;border:none;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer}
+.draw-banner{color:var(--muted);font-weight:800}
+
+/* запись партии */
+.scoresheet{max-height:150px;overflow-y:auto;font-variant-numeric:tabular-nums;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.sheet-empty{color:var(--muted);font-size:13px}
+.sheet-row{display:grid;grid-template-columns:34px 1fr 1fr;gap:8px;padding:2px 0}
+.sheet-n{color:var(--muted)}
+.sheet-m.p0{color:var(--p0)}
+.sheet-m.p1{color:var(--p1)}
+
+/* панель подсказок */
+#hintpanel .hp-title{font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.hp-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;flex-wrap:wrap}
+.hp-badge{flex:0 0 auto;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:800;color:#0f1419}
+.hp-row.hint1 .hp-badge{background:#f5c542}
+.hp-row.hint2 .hp-badge{background:#6ea8fe}
+.hp-move{flex:1 1 auto;min-width:140px}
+.hp-eval{flex:0 0 auto;font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--good)}
+.hp-reply{flex:0 0 auto;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+.hp-pv{width:100%;font-size:12px;color:var(--muted);margin:-2px 0 4px 28px}
+
+/* PV — принципиальная вариация (цепочка ходов) */
+.pv-mv{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+.pv-mv.p0{color:var(--p0)} .pv-mv.p1{color:var(--p1)}
+.pv-sep{color:var(--muted);margin:0 5px}
+#analysisLine{font-size:13px;line-height:1.8;overflow-x:auto}
+.an-pv-label{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;margin-right:8px}
+.an-pv-head{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.an-pv-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:3px 0}
+.an-pv-n{flex:0 0 auto;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;color:#0f1419;background:var(--muted)}
+.an-pv-row:nth-child(2) .an-pv-n{background:#f5c542}
+.an-pv-row:nth-child(3) .an-pv-n{background:#6ea8fe}
+.an-pv-score{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--good)}
+
+.check{color:#f5c542;font-weight:800}
+
+/* кнопка-тумблер во включённом состоянии */
+button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,var(--panel-2));color:#fff}
+
+/* панель анализа (живая оценка) */
+.side.panel{padding:12px 12px 14px}
+.an-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.an-num{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:18px;text-align:center;margin-bottom:8px;
+  font-variant-numeric:tabular-nums}
+.an-bar{flex:1 1 auto;min-height:120px;width:26px;margin:0 auto;border-radius:8px;overflow:hidden;
+  border:1px solid var(--line);display:flex;flex-direction:column;background:var(--panel-2)}
+.an-top{background:var(--p1);transition:height .35s ease}
+.an-bot{background:var(--p0);transition:height .35s ease}
+.an-legend{display:flex;justify-content:space-between;font-size:10.5px;margin-top:6px;font-weight:700}
+.an-line{margin-top:8px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.4;
+  font-family:ui-monospace,Menlo,monospace}
+.an-line b{color:var(--good)}
+
+.footer{color:var(--muted);font-size:12px;text-align:center;margin-top:2px}
+.win-banner{color:var(--good)}
+@media (max-width:380px){ .rack .who{display:none} }

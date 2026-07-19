@@ -1,0 +1,12 @@
+{
+  "name": "gobblet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Gobblet — параметризованный движок (3×3 сейчас, 4×4 потом), собирается в один самодостаточный HTML.",
+  "scripts": {
+    "dev": "node serve.mjs",
+    "build": "node build.mjs",
+    "selfplay": "node tools/selfplay.mjs"
+  }
+}

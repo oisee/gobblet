@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Gobblet</title>
+<link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+  <h1>GOBBLET</h1>
+  <div class="sub" id="variantSub"></div>
+
+  <div class="app" id="app">
+    <div class="toolbar">
+      <label><span data-i18n="mode.label">Соперник:</span>
+        <select id="mode">
+          <option value="hotseat" data-i18n="mode.hotseat">Человек</option>
+          <option value="ai" data-i18n="mode.ai">Компьютер</option>
+          <option value="cvc" data-i18n="mode.cvc">Комп ↔ Комп</option>
+        </select>
+      </label>
+      <label><span data-i18n="variant.label">Вариант:</span>
+        <select id="variant">
+          <option value="classic4" selected>Classic 4×4</option>
+          <option value="gobblers3">Gobblers 3×3</option>
+        </select>
+      </label>
+      <select id="assist" title="Помощник">
+        <option value="off" data-i18n="assist.off">🔍 Помощник: выкл</option>
+        <option value="rating" data-i18n="assist.rating">📈 Помощник: рейтинг</option>
+        <option value="analysis" data-i18n="assist.analysis">📊 Помощник: анализ</option>
+        <option value="coach" data-i18n="assist.coach">🎓 Помощник: тренер</option>
+      </select>
+      <button id="hint" data-i18n="btn.hint">💡 Подсказка</button>
+      <button id="undo" data-i18n="btn.undo">↶ Отменить</button>
+      <button id="newgame" data-i18n="btn.newgame">Новая игра</button>
+      <button id="playpause" style="display:none"></button>
+      <button id="settingsBtn" title="Settings">⚙</button>
+    </div>
+
+    <div class="settings" id="settings">
+      <label><span data-i18n="settings.theme">Тема:</span>
+        <select id="setPalette">
+          <option value="auto" data-i18n="theme.auto">Авто (по варианту)</option>
+          <option value="rb" data-i18n="theme.rb">Красные / Синие</option>
+          <option value="bw" data-i18n="theme.bw">Белые / Чёрные</option>
+        </select>
+      </label>
+      <label><span data-i18n="settings.pieces">Обозначения:</span>
+        <select id="setLabels">
+          <option value="letters">S M L X</option>
+          <option value="numbers">1 2 3 4</option>
+        </select>
+      </label>
+      <label><span id="lvlLabel0"></span><select id="setLevel0"></select></label>
+      <label><span id="lvlLabel1"></span><select id="setLevel1"></select></label>
+      <label><span data-i18n="settings.language">Язык:</span>
+        <select id="setLanguage"></select>
+      </label>
+    </div>
+
+    <div class="rack" id="rack1" data-player="1">
+      <span class="who" id="who1"></span>
+      <div class="piles" id="piles1"></div>
+    </div>
+
+    <div class="status" id="status">
+      <span class="turn-dot" id="turnDot"></span>
+      <span id="statusText"></span>
+    </div>
+
+    <div class="coachbar" id="coachbar" style="display:none"></div>
+
+    <div class="playfield">
+      <div class="board-area">
+        <div class="ranks" id="ranks"></div>
+        <div class="board" id="board"></div>
+        <div class="corner"></div>
+        <div class="files" id="files"></div>
+      </div>
+      <div class="side panel" id="analysisPanel" style="display:none"></div>
+    </div>
+
+    <div class="panel" id="analysisLine" style="display:none"></div>
+
+    <div class="panel" id="hintpanel" style="display:none"></div>
+
+    <div class="rack" id="rack0" data-player="0">
+      <span class="who" id="who0"></span>
+      <div class="piles" id="piles0"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span data-i18n="panel.scoresheet">Запись партии</span>
+        <button id="copyNotation" class="mini-btn" data-i18n="btn.copy">Копировать</button>
+      </div>
+      <div class="scoresheet" id="scoresheet"></div>
+    </div>
+
+    <div class="footer">
+      <span data-i18n="footer.rules"></span><br>
+      <span data-i18n="footer.notation"></span>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
