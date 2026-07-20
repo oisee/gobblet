@@ -15,11 +15,23 @@ findings** (with numbers), and **honest caveats**. Complements `docs/strategy.md
   move — center/edge/corner — all score **~50%**. The earlier "center 58%" **did not hold** —
   it was small-sample noise. The center is still reasonable (more future forks) but gives no
   decisive edge.
-- **4×4 is drawish under strong play.** hard mirror: **white 27.5% / black 27.9% / draws 44.6%** —
-  the first-move edge is ~zero, nearly half the games are drawn.
-- **Even/odd depth artifact.** Mirrors: depth-3 (medium) is decisive and white-favored
-  (56/40, 4% draws); depth-2/4 are drawish (45–53% draws). Looks like a shallow-eval horizon
-  parity effect, not a property of the game — testable with depth 5.
+- **Even/odd oscillation by depth (confirmed for 2–7).** Mirror games (equal strength, random opening):
+
+  | Depth | White | Black | Draws | n |
+  |---|---|---|---|---|
+  | 2 | 23% | 24% | **53%** | 1308 |
+  | 3 | **56%** | 40% | 4% | 1305 |
+  | 4 | 31% | 31% | **38%** | 125 |
+  | 5 | **53%** | 40% | 7% | 124 |
+  | 6 | 28% | 28% | **45%** | 1300 |
+  | 7 | **56%** | 38% | 6% | 16 |
+
+  **Even depths (2,4,6)** are drawish/balanced; **odd depths (3,5,7)** favor white steadily (~53–56%).
+  The result **oscillates by parity — it does not converge.** This is a **shallow-evaluation horizon
+  artifact** (the odd-even effect: a leaf is scored differently depending on whose move was last),
+  **not the true value of the game.** Key takeaway: **you cannot conclude either "4×4 is a draw" or
+  "white wins" — deeper search alone just flips the sign.** Only a real **solve** (with proper draws)
+  or a **parity-independent evaluation** (quiescence) can settle it.
 - **Forks are the main winning mechanism, at every level.** A fork (`++`) ends **57–63%** of
   decisive games. By level gap: gap 0 — 56.5%, gap 1 — 60.9%, gap 2 — 63.2%, gap 3 — 49.0%.
   Even **hard×hard: 55%** of decisive games contain a fork — it just takes long to mature
