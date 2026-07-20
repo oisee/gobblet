@@ -87,6 +87,17 @@
   .study .sol .mv{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--good)}
   .lines-note{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;margin-top:6px}
   .chip{border:1px solid var(--line);border-radius:999px;padding:1px 9px;background:var(--surface)}
+  /* задачник */
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:12px 0}
+  .pcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .pcard .who{font-size:13px;color:var(--muted);margin:8px 0 4px}
+  .pcard details{margin-top:6px;border-top:1px dashed var(--line);padding-top:6px}
+  .pcard summary{cursor:pointer;color:var(--brass);font-weight:700;font-size:14px;list-style:none}
+  .pcard summary::-webkit-details-marker{display:none}
+  .pcard summary::before{content:'▶ '} .pcard details[open] summary::before{content:'▼ '}
+  .pcard .sol .mv{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--good)}
+  .play{display:inline-block;margin-top:8px;background:var(--brass);color:#fff;text-decoration:none;
+    font-weight:700;font-size:13px;padding:5px 11px;border-radius:8px}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
   @media(max-width:560px){.cols{grid-template-columns:1fr}.board{grid-template-columns:14px repeat(4,38px);grid-template-rows:repeat(4,38px) 14px}}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
@@ -185,6 +196,18 @@
     </div>
   </div>
 
+  <h3>7. Дебютный репертуар — что набирало лучший процент</h3>
+  <p>Разница невелика (~±6%), но вот дебюты-лидеры в равной сильной игре, приведённые к канону
+    (повороты, зеркала и перестановки ходов слиты). Общий смысл один: рано бейся за <strong>ядро</strong>.</p>
+  <div class="games">
+    <figure><div class="board" data-pos="X....x.........."></div><figcaption><b>за белых</b> · <code>Xa4 Xb3</code> — <b>56%</b>. Белые угол, чёрные ядро <code>b3</code>.</figcaption></figure>
+    <figure><div class="board" data-pos="x.........X....."></div><figcaption><b>за белых</b> · <code>Xc2 Xa4</code> — <b>53%</b>. Белые сразу в ядро <code>c2</code>.</figcaption></figure>
+    <figure><div class="board" data-pos="x..............X"></div><figcaption><b>за чёрных</b> · <code>Xd1 Xa4</code> — <b>48%</b> чёрных. Оба по противоположным углам — чуть лучше второму.</figcaption></figure>
+    <figure><div class="board" data-pos="...X.....x......"></div><figcaption><b>за чёрных</b> · <code>Xd4 Xb2</code> — <b>46%</b> чёрных. Белые угол, чёрные ядро <code>b2</code>.</figcaption></figure>
+  </div>
+  <p style="color:var(--muted);font-size:14px">Честно: эффект поля мал и «клеточно-специфичен» — надёжный вывод один,
+    <b>занимай ядро рано</b>. Точных «книжных линий», как в шахматах, у 4×4 нет.</p>
+
   <div class="kick">Простые правила по уровням</div>
   <h2>Три «набора правил» — от новичка до максимума</h2>
 
@@ -264,6 +287,36 @@
       создала <strong>вторую</strong> линию — а закрыть можно было только одну.</p>
   </div>
 
+  <div class="kick">Атака и защита</div>
+  <h2>Как строится вилка — и как её гасить</h2>
+
+  <h3>Атака: тихо занимай линию, потом форкни</h3>
+  <p>Вилка не «выпрыгивает» — её готовят. В той партии белые заняли диагональ <code>a4-b3-c2-d1</code>
+    (поля <code>c2</code>, <code>d1</code>), держа <code>X</code> на <code>d4</code> как «прыгуна» на <code>b3</code>,
+    и только потом сыграли <code>Xa4</code> — создав <strong>вторую</strong> угрозу.</p>
+  <div class="games">
+    <figure><div class="board" data-pos="...X....lxX....L"></div><figcaption>Заняты <code>c2</code>, <code>d1</code> — два поля диагонали. <code>X d4</code> ждёт прыжка.</figcaption></figure>
+    <figure><div class="board" data-pos=".MsX.m..lxX....L"></div><figcaption>Всё готово: диагональ + <code>X d4</code>, в верхнем ряду <code>M b4</code>. Нужен второй фронт.</figcaption></figure>
+    <figure><div class="board" data-pos="XMsX.m..lxX....L" data-win="0"></div><figcaption><code>Xa4++</code> — вилка: верхний ряд <b>и</b> диагональ. Не закрыть обе.</figcaption></figure>
+  </div>
+  <p><strong>Принцип атаки:</strong> набери «2 из 4» на <em>двух пересекающихся</em> линиях — тогда ход в перекрёсток станет вилкой.</p>
+
+  <h3>Защита: три способа снять угрозу</h3>
+  <p>Соперник собрал <strong>три в ряд</strong>. Три ответа — по надёжности:</p>
+  <div class="games">
+    <figure><div class="board" data-pos="-/-/-/-/s/s/s/-/-/-/-/-/-/-/-/-"></div>
+      <figcaption><b>1. Накрой.</b> Чёрные <code>s</code> на <code>a3-b3-c3</code>. Бей <code>Xxb3</code> — ряд разорван. (Из резерва можно: фишка в тройке.)</figcaption></figure>
+    <figure><div class="board" data-pos="-/-/-/-/s/s/s/S/-/-/-/-/-/-/-/-"></div>
+      <figcaption><b>2. Займи 4-ю клетку.</b> Нечем накрыть? Поставь свою на <code>d3</code> — ряд больше не «весь чёрный».</figcaption></figure>
+    <figure><div class="board" data-pos="-/-/-/-/s/sX/s/-/-/-/-/-/-/-/-/-"></div>
+      <figcaption><b>3. Не вскрой.</b> Тройка спрятана под твоей <code>X</code> на <code>b3</code> — <b>не двигай</b> её, иначе ряд вскроется сам.</figcaption></figure>
+  </div>
+  <div class="callout warn">
+    <div class="lbl">Главное о защите</div>
+    <p style="margin:.4em 0 0">Одну угрозу гасишь всегда. Опасна <strong>вилка</strong> — две сразу. Поэтому защита
+      начинается <em>раньше</em>: не давай сопернику занять перекрёсток двух линий.</p>
+  </div>
+
   <div class="kick">Как это увидеть</div>
   <h2>Как распознать назревающую вилку</h2>
   <p>Вилка — это одна клетка, которая лежит на <strong>двух линиях сразу</strong>, и на обеих у тебя уже есть
@@ -329,6 +382,36 @@
       </details>
     </div>
   </div>
+
+  <div class="kick">Задачник</div>
+  <h2>Мат в 1, 2, 3 — реши и «Играть»</h2>
+  <p>Позиции из реальных партий, <strong>проверенные солвером</strong> на форсированный мат. Раскрой решение
+    или нажми «Играть» — позиция откроется в игре (нужен собранный <code>dist/gobblet.html</code>: <code>npm run build</code>).</p>
+  <div id="puzzles"></div>
+  <script id="puzzles-data" type="application/json">/*PUZZLES*/{"variant":"classic4","mate1":[{"cat":"mate1","k":1,"turn":1,"pos":"X/-/-/-/l/m/x/-/s/-/X/-/-/X/-/-","san":"Xd3","state":{"board":[[{"player":0,"size":4}],[],[],[],[{"player":1,"size":3}],[{"player":1,"size":2}],[{"player":1,"size":4}],[],[{"player":1,"size":1}],[],[{"player":0,"size":4}],[],[],[{"player":0,"size":4}],[],[]],"hands":[[[1,2,3],[1,2,3],[1,2,3]],[[],[1,2,3,4],[1,2,3,4]]],"turn":1},"plies":7},{"cat":"mate1","k":1,"turn":1,"pos":"X/-/-/l/-/-/X/X/m/-/x/-/-/l/x/x","san":"Sa1","state":{"board":[[{"player":0,"size":4}],[],[],[{"player":1,"size":3}],[],[],[{"player":0,"size":4}],[{"player":0,"size":4}],[{"player":1,"size":2}],[],[{"player":1,"size":4}],[],[],[{"player":1,"size":3}],[{"player":1,"size":4}],[{"player":1,"size":4}]],"hands":[[[1,2,3],[1,2,3],[1,2,3]],[[1],[1,2],[1,2,3]]],"turn":1},"plies":9},{"cat":"mate1","k":1,"turn":1,"pos":"X/m/-/-/-/-/Lx/-/X/x/-/-/Lx/-/X/l","san":"Sd4","state":{"board":[[{"player":0,"size":4}],[{"player":1,"size":2}],[],[],[],[],[{"player":0,"size":3},{"player":1,"size":4}],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[],[],[{"player":0,"size":3},{"player":1,"size":4}],[],[{"player":0,"size":4}],[{"player":1,"size":3}]],"hands":[[[1,2],[1,2],[1,2,3]],[[1],[1,2,3],[1,2,3]]],"turn":1},"plies":10},{"cat":"mate1","k":1,"turn":1,"pos":"-/L/-/-/-/m/x/X/x/M/l/X/LX/-/-/x","san":"Sa4","state":{"board":[[],[{"player":0,"size":3}],[],[],[],[{"player":1,"size":2}],[{"player":1,"size":4}],[{"player":0,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":2}],[{"player":1,"size":3}],[{"player":0,"size":4}],[{"player":0,"size":3},{"player":0,"size":4}],[],[],[{"player":1,"size":4}]],"hands":[[[1],[1,2],[1,2,3]],[[1],[1,2,3],[1,2,3]]],"turn":1},"plies":11},{"cat":"mate1","k":1,"turn":0,"pos":"X/-/-/L/X/x/L/-/x/lX/-/-/-/Sx/M/-","san":"Ma1","state":{"board":[[{"player":0,"size":4}],[],[],[{"player":0,"size":3}],[{"player":0,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":3}],[],[{"player":1,"size":4}],[{"player":1,"size":3},{"player":0,"size":4}],[],[],[],[{"player":0,"size":1},{"player":1,"size":4}],[{"player":0,"size":2}],[]],"hands":[[[],[1,2],[1,2,3]],[[1,2],[1,2,3],[1,2,3]]],"turn":0},"plies":11},{"cat":"mate1","k":1,"turn":1,"pos":"sm/l/-/X/x/-/m/-/L/-/X/x/l/X/-/x","san":"d2xa2","state":{"board":[[{"player":1,"size":1},{"player":1,"size":2}],[{"player":1,"size":3}],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[],[{"player":1,"size":2}],[],[{"player":0,"size":3}],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[{"player":1,"size":3}],[{"player":0,"size":4}],[],[{"player":1,"size":4}]],"hands":[[[1,2],[1,2,3],[1,2,3]],[[],[1],[1,2,3]]],"turn":1},"plies":12},{"cat":"mate1","k":1,"turn":1,"pos":"l/S/-/X/L/-/X/-/x/x/Lx/M/m/-/-/M","san":"Lxd2","state":{"board":[[{"player":1,"size":3}],[{"player":0,"size":1}],[],[{"player":0,"size":4}],[{"player":0,"size":3}],[],[{"player":0,"size":4}],[],[{"player":1,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":0,"size":2}],[{"player":1,"size":2}],[],[],[{"player":0,"size":2}]],"hands":[[[],[1],[1,2,3,4]],[[1],[1,2,3],[1,2,3]]],"turn":1},"plies":12},{"cat":"mate1","k":1,"turn":0,"pos":"M/-/-/x/-/Lx/mX/-/-/-/x/-/lX/S/m/lX","san":"c3xc1","state":{"board":[[{"player":0,"size":2}],[],[],[{"player":1,"size":4}],[],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":1,"size":2},{"player":0,"size":4}],[],[],[],[{"player":1,"size":4}],[],[{"player":1,"size":3},{"player":0,"size":4}],[{"player":0,"size":1}],[{"player":1,"size":2}],[{"player":1,"size":3},{"player":0,"size":4}]],"hands":[[[],[1,2,3],[1,2,3]],[[1],[1],[1,2,3]]],"turn":0},"plies":13},{"cat":"mate1","k":1,"turn":1,"pos":"MlX/-/s/m/-/x/l/-/X/x/-/-/X/l/L/x","san":"Mb4","state":{"board":[[{"player":0,"size":2},{"player":1,"size":3},{"player":0,"size":4}],[],[{"player":1,"size":1}],[{"player":1,"size":2}],[],[{"player":1,"size":4}],[{"player":1,"size":3}],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[],[],[{"player":0,"size":4}],[{"player":1,"size":3}],[{"player":0,"size":3}],[{"player":1,"size":4}]],"hands":[[[1],[1,2,3],[1,2,3]],[[],[1,2],[1,2]]],"turn":1},"plies":13},{"cat":"mate1","k":1,"turn":0,"pos":"L/-/X/X/-/-/L/-/-/Sm/x/x/Ml/Lx/l/X","san":"Mb4","state":{"board":[[{"player":0,"size":3}],[],[{"player":0,"size":4}],[{"player":0,"size":4}],[],[],[{"player":0,"size":3}],[],[],[{"player":0,"size":1},{"player":1,"size":2}],[{"player":1,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":2},{"player":1,"size":3}],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":1,"size":3}],[{"player":0,"size":4}]],"hands":[[[],[1,2],[1,2]],[[1],[1,2],[1,2,3]]],"turn":0},"plies":14}],"mate2":[{"cat":"mate2","k":2,"turn":0,"pos":"lx/-/-/X/-/-/-/x/-/-/M/X/L/-/X/-","san":"d2-c3","state":{"board":[[{"player":1,"size":3},{"player":1,"size":4}],[],[],[{"player":0,"size":4}],[],[],[],[{"player":1,"size":4}],[],[],[{"player":0,"size":2}],[{"player":0,"size":4}],[{"player":0,"size":3}],[],[{"player":0,"size":4}],[]],"hands":[[[1],[1,2,3],[1,2,3]],[[1,2],[1,2,3],[1,2,3,4]]],"turn":0},"plies":8},{"cat":"mate2","k":2,"turn":1,"pos":"s/l/-/-/-/X/m/-/-/-/X/x/l/X/-/x","san":"Xd4","state":{"board":[[{"player":1,"size":1}],[{"player":1,"size":3}],[],[],[],[{"player":0,"size":4}],[{"player":1,"size":2}],[],[],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[{"player":1,"size":3}],[{"player":0,"size":4}],[],[{"player":1,"size":4}]],"hands":[[[1,2,3],[1,2,3],[1,2,3]],[[],[1,2],[1,2,3,4]]],"turn":1},"plies":9},{"cat":"mate2","k":2,"turn":1,"pos":"l/S/-/X/L/-/X/-/-/x/Lx/-/m/-/-/M","san":"Xa2","state":{"board":[[{"player":1,"size":3}],[{"player":0,"size":1}],[],[{"player":0,"size":4}],[{"player":0,"size":3}],[],[{"player":0,"size":4}],[],[],[{"player":1,"size":4}],[{"player":0,"size":3},{"player":1,"size":4}],[],[{"player":1,"size":2}],[],[],[{"player":0,"size":2}]],"hands":[[[],[1,2],[1,2,3,4]],[[1],[1,2,3],[1,2,3,4]]],"turn":1},"plies":10},{"cat":"mate2","k":2,"turn":0,"pos":"L/-/-/lX/-/x/Sx/M/-/-/L/l/M/X/-/-","san":"Xd1","state":{"board":[[{"player":0,"size":3}],[],[],[{"player":1,"size":3},{"player":0,"size":4}],[],[{"player":1,"size":4}],[{"player":0,"size":1},{"player":1,"size":4}],[{"player":0,"size":2}],[],[],[{"player":0,"size":3}],[{"player":1,"size":3}],[{"player":0,"size":2}],[{"player":0,"size":4}],[],[]],"hands":[[[],[1],[1,2,3,4]],[[1,2],[1,2],[1,2,3,4]]],"turn":0},"plies":11},{"cat":"mate2","k":2,"turn":0,"pos":"L/-/-/lX/-/-/Sx/M/-/-/L/lX/M/-/-/x","san":"Xa2","state":{"board":[[{"player":0,"size":3}],[],[],[{"player":1,"size":3},{"player":0,"size":4}],[],[],[{"player":0,"size":1},{"player":1,"size":4}],[{"player":0,"size":2}],[],[],[{"player":0,"size":3}],[{"player":1,"size":3},{"player":0,"size":4}],[{"player":0,"size":2}],[],[],[{"player":1,"size":4}]],"hands":[[[],[1],[1,2,3,4]],[[1,2],[1,2],[1,2,3,4]]],"turn":0},"plies":11},{"cat":"mate2","k":2,"turn":1,"pos":"X/l/x/-/sX/X/x/-/l/m/-/-/-/m/-/x","san":"c4-a1","state":{"board":[[{"player":0,"size":4}],[{"player":1,"size":3}],[{"player":1,"size":4}],[],[{"player":1,"size":1},{"player":0,"size":4}],[{"player":0,"size":4}],[{"player":1,"size":4}],[],[{"player":1,"size":3}],[{"player":1,"size":2}],[],[],[],[{"player":1,"size":2}],[],[{"player":1,"size":4}]],"hands":[[[1,2,3],[1,2,3],[1,2,3]],[[],[1],[1,2,3]]],"turn":1},"plies":11},{"cat":"mate2","k":2,"turn":0,"pos":"M/-/l/X/-/-/X/x/X/Sx/x/-/-/L/-/L","san":"d4-a1","state":{"board":[[{"player":0,"size":2}],[],[{"player":1,"size":3}],[{"player":0,"size":4}],[],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":4}],[{"player":0,"size":1},{"player":1,"size":4}],[{"player":1,"size":4}],[],[],[{"player":0,"size":3}],[],[{"player":0,"size":3}]],"hands":[[[],[1,2],[1,2,3]],[[1,2],[1,2,3],[1,2,3]]],"turn":0},"plies":11},{"cat":"mate2","k":2,"turn":0,"pos":"-/-/Mx/-/m/X/S/s/-/x/x/L/X/-/-/lX","san":"a1xd3","state":{"board":[[],[],[{"player":0,"size":2},{"player":1,"size":4}],[],[{"player":1,"size":2}],[{"player":0,"size":4}],[{"player":0,"size":1}],[{"player":1,"size":1}],[],[{"player":1,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":3}],[{"player":0,"size":4}],[],[],[{"player":1,"size":3},{"player":0,"size":4}]],"hands":[[[],[1,2,3],[1,2,3]],[[],[1,2,3],[1,2,3]]],"turn":0},"plies":12},{"cat":"mate2","k":2,"turn":1,"pos":"-/s/X/Ml/x/X/lX/-/m/-/x/-/-/-/Lx/m","san":"a3-d2","state":{"board":[[],[{"player":1,"size":1}],[{"player":0,"size":4}],[{"player":0,"size":2},{"player":1,"size":3}],[{"player":1,"size":4}],[{"player":0,"size":4}],[{"player":1,"size":3},{"player":0,"size":4}],[],[{"player":1,"size":2}],[],[{"player":1,"size":4}],[],[],[],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":1,"size":2}]],"hands":[[[1],[1,2,3],[1,2,3]],[[],[1],[1,2,3]]],"turn":1},"plies":13},{"cat":"mate2","k":2,"turn":0,"pos":"L/-/X/-/-/-/L/-/-/S/x/x/Ml/Lx/lX/X","san":"c1-d4","state":{"board":[[{"player":0,"size":3}],[],[{"player":0,"size":4}],[],[],[],[{"player":0,"size":3}],[],[],[{"player":0,"size":1}],[{"player":1,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":2},{"player":1,"size":3}],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":1,"size":3},{"player":0,"size":4}],[{"player":0,"size":4}]],"hands":[[[],[1,2],[1,2]],[[1,2],[1,2],[1,2,3]]],"turn":0},"plies":13}],"mate3":[{"cat":"mate3","k":3,"turn":0,"pos":"M/-/X/-/-/-/-/x/-/-/S/-/L/-/-/-","san":"Xd4","state":{"board":[[{"player":0,"size":2}],[],[{"player":0,"size":4}],[],[],[],[],[{"player":1,"size":4}],[],[],[{"player":0,"size":1}],[],[{"player":0,"size":3}],[],[],[]],"hands":[[[],[1,2,3,4],[1,2,3,4]],[[1,2,3],[1,2,3,4],[1,2,3,4]]],"turn":0},"plies":5},{"cat":"mate3","k":3,"turn":1,"pos":"-/-/-/s/x/-/l/L/-/X/m/-/x/-/X/-","san":"Xa4","state":{"board":[[],[],[],[{"player":1,"size":1}],[{"player":1,"size":4}],[],[{"player":1,"size":3}],[{"player":0,"size":3}],[],[{"player":0,"size":4}],[{"player":1,"size":2}],[],[{"player":1,"size":4}],[],[{"player":0,"size":4}],[]],"hands":[[[1,2],[1,2,3],[1,2,3,4]],[[],[1,2,3],[1,2,3,4]]],"turn":1},"plies":8},{"cat":"mate3","k":3,"turn":0,"pos":"-/x/X/-/-/X/-/L/M/l/-/-/x/-/-/X","san":"c4-c2","state":{"board":[[],[{"player":1,"size":4}],[{"player":0,"size":4}],[],[],[{"player":0,"size":4}],[],[{"player":0,"size":3}],[{"player":0,"size":2}],[{"player":1,"size":3}],[],[],[{"player":1,"size":4}],[],[],[{"player":0,"size":4}]],"hands":[[[1],[1,2,3],[1,2,3]],[[1,2],[1,2,3],[1,2,3,4]]],"turn":0},"plies":8},{"cat":"mate3","k":3,"turn":1,"pos":"l/S/-/X/-/x/X/-/-/x/L/-/m/-/-/M","san":"Xb1","state":{"board":[[{"player":1,"size":3}],[{"player":0,"size":1}],[],[{"player":0,"size":4}],[],[{"player":1,"size":4}],[{"player":0,"size":4}],[],[],[{"player":1,"size":4}],[{"player":0,"size":3}],[],[{"player":1,"size":2}],[],[],[{"player":0,"size":2}]],"hands":[[[],[1,2,3],[1,2,3,4]],[[1],[1,2,3],[1,2,3,4]]],"turn":1},"plies":9},{"cat":"mate3","k":3,"turn":0,"pos":"-/-/X/s/S/m/X/-/-/X/Ml/-/x/-/-/L","san":"b2xc2","state":{"board":[[],[],[{"player":0,"size":4}],[{"player":1,"size":1}],[{"player":0,"size":1}],[{"player":1,"size":2}],[{"player":0,"size":4}],[],[],[{"player":0,"size":4}],[{"player":0,"size":2},{"player":1,"size":3}],[],[{"player":1,"size":4}],[],[],[{"player":0,"size":3}]],"hands":[[[],[1,2,3],[1,2,3]],[[],[1,2,3,4],[1,2,3,4]]],"turn":0},"plies":10},{"cat":"mate3","k":3,"turn":1,"pos":"Lx/x/X/-/-/-/-/s/-/l/-/X/x/mX/M/-","san":"b4-a3","state":{"board":[[{"player":0,"size":3},{"player":1,"size":4}],[{"player":1,"size":4}],[{"player":0,"size":4}],[],[],[],[],[{"player":1,"size":1}],[],[{"player":1,"size":3}],[],[{"player":0,"size":4}],[{"player":1,"size":4}],[{"player":1,"size":2},{"player":0,"size":4}],[{"player":0,"size":2}],[]],"hands":[[[1],[1,2,3],[1,2,3]],[[],[1,2,3],[1,2,3]]],"turn":1},"plies":11},{"cat":"mate3","k":3,"turn":0,"pos":"-/-/-/X/X/Mx/Lx/Lx/l/-/L/X/m/S/-/-","san":"d4-b2","state":{"board":[[],[],[],[{"player":0,"size":4}],[{"player":0,"size":4}],[{"player":0,"size":2},{"player":1,"size":4}],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":1,"size":3}],[],[{"player":0,"size":3}],[{"player":0,"size":4}],[{"player":1,"size":2}],[{"player":0,"size":1}],[],[]],"hands":[[[],[1,2],[1,2]],[[1],[1,2,3],[1,2,3]]],"turn":0},"plies":13},{"cat":"mate3","k":3,"turn":0,"pos":"Mx/-/X/Ml/S/-/Lx/-/m/X/X/-/-/Lx/-/S","san":"Ld2","state":{"board":[[{"player":0,"size":2},{"player":1,"size":4}],[],[{"player":0,"size":4}],[{"player":0,"size":2},{"player":1,"size":3}],[{"player":0,"size":1}],[],[{"player":0,"size":3},{"player":1,"size":4}],[],[{"player":1,"size":2}],[{"player":0,"size":4}],[{"player":0,"size":4}],[],[],[{"player":0,"size":3},{"player":1,"size":4}],[],[{"player":0,"size":1}]],"hands":[[[],[],[1,2,3]],[[1],[1,2,3],[1,2,3]]],"turn":0},"plies":14},{"cat":"mate3","k":3,"turn":1,"pos":"l/-/-/Sx/L/sX/m/-/Lx/Ml/-/-/X/-/X/x","san":"Ld2","state":{"board":[[{"player":1,"size":3}],[],[],[{"player":0,"size":1},{"player":1,"size":4}],[{"player":0,"size":3}],[{"player":1,"size":1},{"player":0,"size":4}],[{"player":1,"size":2}],[],[{"player":0,"size":3},{"player":1,"size":4}],[{"player":0,"size":2},{"player":1,"size":3}],[],[],[{"player":0,"size":4}],[],[{"player":0,"size":4}],[{"player":1,"size":4}]],"hands":[[[],[1,2],[1,2,3]],[[],[1,2],[1,2,3]]],"turn":1},"plies":14},{"cat":"mate3","k":3,"turn":0,"pos":"sl/-/-/X/L/L/-/Mx/-/M/-/mx/-/x/LX/X","san":"c1xa4","state":{"board":[[{"player":1,"size":1},{"player":1,"size":3}],[],[],[{"player":0,"size":4}],[{"player":0,"size":3}],[{"player":0,"size":3}],[],[{"player":0,"size":2},{"player":1,"size":4}],[],[{"player":0,"size":2}],[],[{"player":1,"size":2},{"player":1,"size":4}],[],[{"player":1,"size":4}],[{"player":0,"size":3},{"player":0,"size":4}],[{"player":0,"size":4}]],"hands":[[[1],[1],[1,2]],[[],[1,2,3],[1,2,3]]],"turn":0},"plies":14}]}/*END*/</script>
+  <script>
+   (function(){
+     const CAT={mate1:'Мат в 1 ход',mate2:'Мат в 2 хода',mate3:'Мат в 3 хода'};
+     let data={}; try{ data=JSON.parse(document.getElementById('puzzles-data').textContent.replace(/^\s*\/\*PUZZLES\*\//,'').replace(/\/\*END\*\/\s*$/,'')); }catch(e){ return; }
+     const enc=(o)=>encodeURIComponent(btoa(JSON.stringify(o)));
+     const host=document.getElementById('puzzles'); const variant=data.variant||'classic4';
+     for(const cat of ['mate1','mate2','mate3']){
+       const list=data[cat]||[]; if(!list.length) continue;
+       const h=document.createElement('h3'); h.textContent=CAT[cat]; host.appendChild(h);
+       const grid=document.createElement('div'); grid.className='pgrid';
+       for(const p of list){
+         const code=enc({v:variant,board:p.state.board,hands:p.state.hands,turn:p.state.turn});
+         const card=document.createElement('div'); card.className='pcard';
+         card.innerHTML='<div class="board" data-pos="'+p.pos+'"></div>'+
+           '<div class="who">'+(p.turn===0?'Белые ходят':'Чёрные ходят')+'</div>'+
+           '<details><summary>Решение</summary><div class="sol">Ключ: <span class="mv">'+p.san+'</span> → форсированный мат в '+p.k+'.</div></details>'+
+           '<a class="play" href="../dist/gobblet.html#pzl='+code+'" target="_blank">▶ Играть</a>';
+         grid.appendChild(card);
+       }
+       host.appendChild(grid);
+     }
+   })();
+  </script>
 
   <div class="kick">Ловушки</div>
   <h2>Два приёма, которые ставят соперника в проигрыш</h2>
