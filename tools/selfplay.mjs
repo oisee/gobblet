@@ -18,7 +18,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 function parseArgs(argv) {
   const a = { variant: 'classic4', levels: 'club,medium,hard', games: 1, seed: 1, maxPlies: 300, openingPlies: 0, minutes: 0 };
-  for (const s of argv) { const m = /^--([^=]+)=(.*)$/.exec(s); if (m) a[m[1]] = m[2]; }
+  for (const s of argv) { const m = /^--([^=]+)(?:=(.*))?$/.exec(s); if (m) a[m[1]] = m[2] !== undefined ? m[2] : true; }
   a.games = Math.max(1, parseInt(a.games, 10) || 1);
   a.seed = parseInt(a.seed, 10) || 1;
   a.maxPlies = parseInt(a.maxPlies, 10) || 300;
@@ -36,7 +36,8 @@ function pairs(levels) { const out = []; for (const w of levels) for (const b of
 
 // Генератор заданий: по времени (minutes) — бесконечно; иначе — фикс. число.
 function makeNextTask(args) {
-  const ps = pairs(args.levelList);
+  let ps = pairs(args.levelList);
+  if (args.mirror) ps = ps.filter(([w, b]) => w === b); // только зеркальные пары
   let idx = 0;
   if (args.minutes > 0) {
     const deadline = Date.now() + args.minutes * 60000;

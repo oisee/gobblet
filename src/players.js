@@ -14,8 +14,9 @@ export const AI_LEVELS = {
   hard: { random: 0.0, depth: 'max' },   // = глубина 4 на 4×4
   expert: { random: 0.0, depth: 5 },     // медленно (для self-play/солвера)
   master: { random: 0.0, depth: 6 },     // очень медленно
+  titan: { random: 0.0, depth: 7 },      // крайне медленно
 };
-export const LEVEL_ORDER = ['balbes', 'novice', 'amateur', 'student', 'club', 'medium', 'hard', 'expert', 'master'];
+export const LEVEL_ORDER = ['balbes', 'novice', 'amateur', 'student', 'club', 'medium', 'hard', 'expert', 'master', 'titan'];
 export function maxDepth(v) { return v.boardSize >= 4 ? 4 : 5; }
 
 // Выбор хода по уровню. rng() ∈ [0,1) — для воспроизводимости можно передать сид-PRNG.
