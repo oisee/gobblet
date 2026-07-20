@@ -27,11 +27,12 @@ from the game rules.*
 ## By phase
 
 ### Opening (first ~3 moves)
-- The first move is always `X` (only the largest is accessible in reserve). **Play the
-  center** (the core `b2 c2 b3 c3`). **[data]** in strong play the center wins **58%**,
-  an edge 54%, a corner 52%. A corner is the worst of the three.
+- The first move is always `X` (only the largest is accessible in reserve). **[data]** across
+  20k games where you put `X` barely matters: in clean strong play (hard×hard) center, edge and
+  corner all score **~50%**. The center is still reasonable (it feeds more future forks) but gives
+  no decisive edge. *(The earlier "center 58%" was small-sample noise; it didn't hold at scale.)*
 - Don't dump all three `X` on the rim — keep big pieces in reserve for defense.
-- Answer the opponent's center with your own center — both sides fight for the core.
+- Answer the opponent's center with your own center.
 
 ### Middlegame
 - Build **intersecting triples** → a fork. Don't telegraph a single threat — it just gets
@@ -84,6 +85,29 @@ cover, `+` check, `++` double (fork), `#` win. More: `docs/strategy.md`, `docs/r
 *What we could derive from engine self-play. Split into **methodology**, **empirical
 findings** (with numbers), and **honest caveats**. Complements `docs/strategy.md`
 (principles) and `docs/cheatsheet-en.md` (the short version).*
+
+---
+
+## 0. Update from a 20,895-game run (overnight)
+
+*Section §2 below uses the earlier 1-hour run (3666 games). A large overnight run
+(20,895 games, 16 cores) **corrected** some of it — treat these numbers as primary.*
+
+- **The opening is nearly neutral.** In clean strong play (hard×hard, 1300 games) the first
+  move — center/edge/corner — all score **~50%**. The earlier "center 58%" **did not hold** —
+  it was small-sample noise. The center is still reasonable (more future forks) but gives no
+  decisive edge.
+- **4×4 is drawish under strong play.** hard mirror: **white 27.5% / black 27.9% / draws 44.6%** —
+  the first-move edge is ~zero, nearly half the games are drawn.
+- **Even/odd depth artifact.** Mirrors: depth-3 (medium) is decisive and white-favored
+  (56/40, 4% draws); depth-2/4 are drawish (45–53% draws). Looks like a shallow-eval horizon
+  parity effect, not a property of the game — testable with depth 5.
+- **Forks are the main winning mechanism, at every level.** A fork (`++`) ends **57–63%** of
+  decisive games. By level gap: gap 0 — 56.5%, gap 1 — 60.9%, gap 2 — 63.2%, gap 3 — 49.0%.
+  Even **hard×hard: 55%** of decisive games contain a fork — it just takes long to mature
+  (avg decisive hard game ~44 plies vs ~9 at a large level gap). So **forks happen in equal
+  strong play too**, not only across a level gap; at a big gap the stronger side more often
+  wins by direct pressure before a fork is needed.
 
 ---
 

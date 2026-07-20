@@ -20,11 +20,12 @@ from the game rules.*
 ## By phase
 
 ### Opening (first ~3 moves)
-- The first move is always `X` (only the largest is accessible in reserve). **Play the
-  center** (the core `b2 c2 b3 c3`). **[data]** in strong play the center wins **58%**,
-  an edge 54%, a corner 52%. A corner is the worst of the three.
+- The first move is always `X` (only the largest is accessible in reserve). **[data]** across
+  20k games where you put `X` barely matters: in clean strong play (hard×hard) center, edge and
+  corner all score **~50%**. The center is still reasonable (it feeds more future forks) but gives
+  no decisive edge. *(The earlier "center 58%" was small-sample noise; it didn't hold at scale.)*
 - Don't dump all three `X` on the rim — keep big pieces in reserve for defense.
-- Answer the opponent's center with your own center — both sides fight for the core.
+- Answer the opponent's center with your own center.
 
 ### Middlegame
 - Build **intersecting triples** → a fork. Don't telegraph a single threat — it just gets

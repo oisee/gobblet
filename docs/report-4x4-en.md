@@ -6,6 +6,29 @@ findings** (with numbers), and **honest caveats**. Complements `docs/strategy.md
 
 ---
 
+## 0. Update from a 20,895-game run (overnight)
+
+*Section §2 below uses the earlier 1-hour run (3666 games). A large overnight run
+(20,895 games, 16 cores) **corrected** some of it — treat these numbers as primary.*
+
+- **The opening is nearly neutral.** In clean strong play (hard×hard, 1300 games) the first
+  move — center/edge/corner — all score **~50%**. The earlier "center 58%" **did not hold** —
+  it was small-sample noise. The center is still reasonable (more future forks) but gives no
+  decisive edge.
+- **4×4 is drawish under strong play.** hard mirror: **white 27.5% / black 27.9% / draws 44.6%** —
+  the first-move edge is ~zero, nearly half the games are drawn.
+- **Even/odd depth artifact.** Mirrors: depth-3 (medium) is decisive and white-favored
+  (56/40, 4% draws); depth-2/4 are drawish (45–53% draws). Looks like a shallow-eval horizon
+  parity effect, not a property of the game — testable with depth 5.
+- **Forks are the main winning mechanism, at every level.** A fork (`++`) ends **57–63%** of
+  decisive games. By level gap: gap 0 — 56.5%, gap 1 — 60.9%, gap 2 — 63.2%, gap 3 — 49.0%.
+  Even **hard×hard: 55%** of decisive games contain a fork — it just takes long to mature
+  (avg decisive hard game ~44 plies vs ~9 at a large level gap). So **forks happen in equal
+  strong play too**, not only across a level gap; at a big gap the stronger side more often
+  wins by direct pressure before a fork is needed.
+
+---
+
 ## 1. Methodology
 
 - The **engine** is DOM-free (`src/engine.js`, `ai.js`, `players.js`), so computer-vs-computer
