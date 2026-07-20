@@ -1,8 +1,48 @@
 // ИИ на alpha-beta с упорядочиванием ходов поверхностной оценкой
 // и транспозиционной таблицей на симметрийном canonicalKey.
-import { topOf, cloneState, applyMove, generateMoves, makeMove, unmakeMove, zobristKey, computeZobrist } from './engine.js';
+import { topOf, cloneState, applyMove, generateMoves, makeMove, unmakeMove, threatsFor, zobristKey, computeZobrist } from './engine.js';
 
 export const WIN_SCORE = 100000;
+
+// Quiescence: на горизонте не возвращаем статику вслепую, а досчитываем «шумные» линии
+// (выигрыш сейчас + вынужденный ответ на угрозу) до тишины — убирает odd-even артефакт.
+let QUIESCE = false;   // дорогой (~17×) — вкл явно для анализа/экспериментов
+const Q_MAX = 2;
+export function setQuiesce(on) { QUIESCE = !!on; }
+
+// Дешёвая проверка угрозы: линия, где все верхние фишки — игрока player и ровно одна пустая
+// (можно достроить следующим ходом). Без генерации ходов/клонов.
+function hasThreat(state, player) {
+  for (const line of state.lines) {
+    let mine = 0, empty = 0, foe = 0;
+    for (const idx of line) { const t = topOf(state.board[idx]); if (!t) empty++; else if (t.player === player) mine++; else { foe++; break; } }
+    if (foe === 0 && empty === 1 && mine === line.length - 1) return true;
+  }
+  return false;
+}
+// Мат из quiescence должен быть «дальше» любого реального мата поиска (чтобы не обгонять его в ранжировании).
+const qWin = (qd, forMe) => { const v = WIN_SCORE - 20 - (Q_MAX - qd) - 1; return forMe ? v : -v; };
+
+function quiesce(state, alpha, beta, me, qd) {
+  const p = state.turn, opp = 1 - p;
+  for (const m of generateMoves(state, p)) {          // 1) немедленный выигрыш ходящего
+    const u = makeMove(state, m); const w = state.winner === p; unmakeMove(state, m, u);
+    if (w) return qWin(qd, p === me);
+  }
+  const stand = evaluate(state, me);
+  if (qd <= 0 || !hasThreat(state, opp)) return stand;  // тихо
+  const maxing = (p === me);                            // 2) соперник грозит — перебираем ответы
+  let best = maxing ? -Infinity : Infinity;
+  for (const m of generateMoves(state, p)) {
+    const u = makeMove(state, m);
+    const v = (state.winner === opp) ? qWin(qd, !maxing) : quiesce(state, alpha, beta, me, qd - 1);
+    unmakeMove(state, m, u);
+    if (maxing) { if (v > best) best = v; if (best > alpha) alpha = best; }
+    else { if (v < best) best = v; if (best < beta) beta = best; }
+    if (alpha >= beta) break;
+  }
+  return best;
+}
 
 // ---- Транспозиционная таблица ----
 // Ключ — canonicalKey (8 симметрий доски). Значение — с точки зрения игрока `me`,
@@ -46,7 +86,7 @@ export function search(state, depth, alpha, beta, me) {
   if (state.winner !== null) {
     return state.winner === me ? WIN_SCORE - (20 - depth) : -WIN_SCORE + (20 - depth);
   }
-  if (depth === 0) return evaluate(state, me);
+  if (depth === 0) return QUIESCE ? quiesce(state, alpha, beta, me, Q_MAX) : evaluate(state, me);
 
   const alphaOrig = alpha, betaOrig = beta;
   const key = TT_ON ? zobristKey(state) : null;

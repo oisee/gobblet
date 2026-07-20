@@ -2,6 +2,7 @@
 import { VARIANTS } from '../src/variants.js';
 import { newGame, applyMove } from '../src/engine.js';
 import { pickMove } from '../src/players.js';
+import { setQuiesce } from '../src/ai.js';
 import { moveCompact, checkSuffix } from '../src/notation.js';
 
 // Детерминированный PRNG (mulberry32) — воспроизводимость партий по сиду.
@@ -22,7 +23,8 @@ function posKey(s) {
 
 // white/black — ключи уровней. openingPlies — сколько первых полуходов сыграть случайно
 // (диверсификация дебютов). Возвращает запись партии для базы.
-export function playGame({ variantId, white, black, seed = 1, maxPlies = 300, openingPlies = 0 }) {
+export function playGame({ variantId, white, black, seed = 1, maxPlies = 300, openingPlies = 0, quiesce = false }) {
+  setQuiesce(quiesce);
   const v = VARIANTS[variantId];
   const s = newGame(v);
   const rng = mulberry32(seed >>> 0);

@@ -44,7 +44,7 @@ function makeNextTask(args) {
     return () => {
       if (Date.now() >= deadline) return null;
       const [white, black] = ps[idx % ps.length];
-      const task = { variantId: args.variant, white, black, seed: args.seed + idx, maxPlies: args.maxPlies, openingPlies: args.openingPlies };
+      const task = { variantId: args.variant, white, black, seed: args.seed + idx, maxPlies: args.maxPlies, openingPlies: args.openingPlies, quiesce: !!args.quiesce };
       idx++;
       return task;
     };
@@ -53,7 +53,7 @@ function makeNextTask(args) {
   const tasks = [];
   for (const [white, black] of ps) {
     const n = (args.openingPlies === 0 && isDeterministic(white) && isDeterministic(black)) ? 1 : args.games;
-    for (let g = 0; g < n; g++) { tasks.push({ variantId: args.variant, white, black, seed: args.seed + tasks.length, maxPlies: args.maxPlies, openingPlies: args.openingPlies }); }
+    for (let g = 0; g < n; g++) { tasks.push({ variantId: args.variant, white, black, seed: args.seed + tasks.length, maxPlies: args.maxPlies, openingPlies: args.openingPlies, quiesce: !!args.quiesce }); }
   }
   let k = 0;
   const nt = () => (k < tasks.length ? tasks[k++] : null);
