@@ -55,7 +55,17 @@
     gap:3px;background:transparent}
   .board .rk{grid-column:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace}
   .board .fl{grid-row:6;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace}
-  .sq{background:var(--sq);border-radius:6px;display:grid;place-items:center}
+  .sq{background:var(--sq);border-radius:6px;display:grid;place-items:center;position:relative}
+  /* нижние матрёшки (что под верхней фишкой) */
+  .under{position:absolute;bottom:1px;left:0;right:0;display:flex;gap:1px;justify-content:center;pointer-events:none}
+  .pip{width:11px;height:11px;border-radius:50%;font-size:7px;line-height:11px;text-align:center;font-weight:800;
+    box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+  .pip.w{background:var(--white-d);color:#4a4030} .pip.b{background:var(--black);color:#eef1f4}
+  /* резервная стопка (матрёшка) для дебютов */
+  .reserve{display:inline-flex;flex-direction:column;align-items:center;gap:3px;vertical-align:middle}
+  .reserve .top{outline:2px solid var(--good);outline-offset:2px}
+  .rzrow{display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin:14px 0}
+  .rzrow .cap{font-size:13.5px;color:var(--soft);max-width:34ch}
   .sq.dark{background:var(--sq-d)} .sq.win{background:var(--hl);box-shadow:inset 0 0 0 2px var(--brass)}
   .disc{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;
     box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 2px 3px rgba(255,255,255,.35),inset 0 -4px 7px rgba(0,0,0,.25)}
@@ -91,8 +101,9 @@
   <header>
     <div class="eyebrow">Gobblet · Classic 4×4 · практика по данным</div>
     <h1>Как выигрывать в Gobblet 4×4</h1>
-    <p class="lede">Практическое руководство, выведенное из ~21 000 партий движка. Простые
-      правила по уровням соперника, чеклисты, ловушки и разобранная партия на диаграммах.</p>
+    <p class="lede">Практическое руководство, выведенное из ~21 000 партий движка. Дебют и матрёшки
+      резерва, правила по уровням соперника, распознавание вилок, этюды с решениями, ловушки и
+      разобранные партии — всё на диаграммах.</p>
   </header>
 
   <div class="kick">Что говорят данные</div>
@@ -114,6 +125,64 @@
     <p style="margin:.4em 0 0">Ранний часовой прогон показывал «центр 58%». На объёме в 20× это <strong>не
       подтвердилось</strong> — центр/ребро/угол выровнялись к ~50%. Тот перекос был шумом малой выборки.
       Центр по-прежнему разумен (он в большем числе будущих вилок), но <em>решающего</em> преимущества не даёт.</p>
+  </div>
+
+  <div class="kick">Дебют</div>
+  <h2>Дебют: что важно, а что нет</h2>
+  <p>Книги дебютов, как в шахматах, у 4×4 нет — данные показали, что первый ход почти нейтрален.
+    Но есть реальные, неочевидные правила: они растут из устройства <strong>резерва</strong>.</p>
+
+  <h3>1. Первый ход всегда <code>X</code> — и это не выбор</h3>
+  <p>Резерв — три <strong>вложенные стопки</strong> (матрёшки). Доступна только верхняя фишка, а верхняя —
+    самая большая, <code>X</code>. Поэтому доска пуста, а единственный дебютный ход — поставить <code>X</code>.</p>
+  <div class="rzrow">
+    <div class="reserve">
+      <span class="disc w x top">X</span><span class="disc w l">L</span><span class="disc w m">M</span><span class="disc w s">S</span>
+    </div>
+    <div class="cap">Одна стопка резерва. Сверху (в рамке) — <code>X</code>, только её можно взять.
+      <code>L · M · S</code> заперты под ней. Таких стопки у игрока <strong>три</strong>.</div>
+  </div>
+
+  <h3>2. Куда ставить <code>X</code> — почти всё равно</h3>
+  <p><span class="tag data">данные</span> центр / ребро / угол дают ~50% одинаково. Центр разумен по умолчанию
+    (он на 3 линиях → в большем числе будущих вилок), но это <em>предпочтение</em>, а не обязанность.</p>
+
+  <h3>3. Не выкидывай все три <code>X</code> сразу</h3>
+  <p>У тебя всего <strong>три</strong> <code>X</code>. Каждая на доске — на одну меньше в запасе под защиту и
+    накрытия. Реальный дебютный принцип: держи хотя бы одну <code>X</code> в резерве.</p>
+
+  <h3>4. Порядок вскрытия резерва: <code>X → L → M → S</code></h3>
+  <div class="rzrow">
+    <div class="reserve">
+      <span class="disc w l top">L</span><span class="disc w m">M</span><span class="disc w s">S</span>
+    </div>
+    <div class="cap">Взял <code>X</code> из стопки — открылась <code>L</code>. Значит мелкие фишки — <strong>поздний
+      ресурс</strong>: сыграть маленькую в дебюте нельзя, как бы ни хотелось. Ранняя игра всегда «крупная».</div>
+  </div>
+
+  <h3>5. Пример дебюта</h3>
+  <div class="games">
+    <figure><div class="board" data-pos="...X............"></div><figcaption>1. <code>Xd4</code> — белые ставят <code>X</code>. Теперь их <code>L</code> в этой стопке доступна.</figcaption></figure>
+    <figure><div class="board" data-pos="...X.....x......"></div><figcaption>1… <code>Xb2</code> — чёрные <code>X</code> в центр (ядро).</figcaption></figure>
+    <figure><div class="board" data-pos="...X.....x.....L"></div><figcaption>2. <code>Ld1</code> — белые вводят открывшуюся <code>L</code>.</figcaption></figure>
+  </div>
+
+  <h3>6. Матрёшки и вскрытие — что под фишкой</h3>
+  <p>Когда бо́льшая фишка встаёт на меньшую, та не исчезает — прячется <strong>под</strong> ней. Сдвинешь верхнюю —
+    нижняя вскроется. Ниже белая <code>X</code> накрыла чёрную <code>s</code> на <code>b3</code> (маленький пипс под фишкой):
+    ряд <code>a3-b3-c3</code> у чёрных «заряжен» и вскроется, если белые уведут <code>X</code> с <code>b3</code>.</p>
+  <div class="games">
+    <figure>
+      <div class="board" data-pos="-/-/-/-/s/sX/s/-/-/-/-/-/-/-/-/-"></div>
+      <figcaption>Пипс под верхней фишкой = нижняя матрёшка. У чёрных под <code>X</code> спрятана третья фишка ряда.</figcaption>
+    </figure>
+    <div class="q" style="min-width:220px">
+      <p class="ask">Практический вывод:</p>
+      <ul style="margin:.2em 0 0">
+        <li>Перед каждым сдвигом своей фишки спрашивай: <b>что под ней?</b></li>
+        <li>Прячь свои фишки под чужие — чтобы вскрытие сыграло <b>на тебя</b> (ловушка вскрытия).</li>
+      </ul>
+    </div>
   </div>
 
   <div class="kick">Простые правила по уровням</div>
@@ -305,9 +374,16 @@
   // Рендер диаграмм из строки 16 символов (rank4→rank1, файлы a→d):
   // '.' пусто; ЗАГЛАВНЫЕ = белые, строчные = чёрные; S/M/L/X — размер.
   const FILES = ['a','b','c','d'];
+  const disc = (ch, cls) => { const white = ch === ch.toUpperCase(); const size = ch.toUpperCase();
+    const zc = {S:'s',M:'m',L:'l',X:'x'}[size]; const d = document.createElement('div');
+    d.className = cls + ' ' + (white?'w':'b') + ' ' + zc; d.textContent = size; return d; };
   document.querySelectorAll('.board[data-pos]').forEach(el => {
-    const pos = el.dataset.pos;
+    const raw = el.dataset.pos;
     const win = (el.dataset.win || '').split(',').filter(x=>x!=='').map(Number);
+    // формат со стопками: клетки через '/', снизу вверх; '-' пусто. Иначе — 16 глифов (только верх).
+    const cells = raw.includes('/')
+      ? raw.split('/').map(c => (c==='-'||c==='.') ? [] : [...c])
+      : [...raw].map(c => (c==='.'||c==='-') ? [] : [c]);
     el.innerHTML = '';
     for (let r = 0; r < 4; r++) {
       const rk = document.createElement('div'); rk.className='rk'; rk.textContent = 4 - r; el.appendChild(rk);
@@ -315,21 +391,20 @@
         const i = r*4 + c;
         const sq = document.createElement('div');
         sq.className = 'sq' + (((r+c)%2)?' dark':'') + (win.includes(i)?' win':'');
-        const ch = pos[i];
-        if (ch && ch !== '.') {
-          const white = ch === ch.toUpperCase();
-          const size = ch.toUpperCase();
-          const zc = {S:'s',M:'m',L:'l',X:'x'}[size];
-          const d = document.createElement('div');
-          d.className = 'disc ' + (white?'w':'b') + ' ' + zc;
-          d.textContent = size;
-          sq.appendChild(d);
+        const st = cells[i] || [];
+        if (st.length) {
+          sq.appendChild(disc(st[st.length-1], 'disc'));   // верхняя фишка
+          if (st.length > 1) {                              // нижние матрёшки — пипсами
+            const u = document.createElement('div'); u.className = 'under';
+            for (let k = 0; k < st.length-1; k++) { const ch = st[k];
+              const p = document.createElement('div'); p.className = 'pip ' + (ch===ch.toUpperCase()?'w':'b'); p.textContent = ch.toUpperCase(); u.appendChild(p); }
+            sq.appendChild(u);
+          }
         }
         el.appendChild(sq);
       }
     }
-    // нижний ряд подписей файлов
-    const corner = document.createElement('div'); corner.className='fl'; corner.style.gridColumn='1'; el.appendChild(corner);
+    const corner = document.createElement('div'); corner.className='fl'; el.appendChild(corner);
     for (let c = 0; c < 4; c++) { const fl = document.createElement('div'); fl.className='fl'; fl.textContent = FILES[c]; el.appendChild(fl); }
   });
 </script>
