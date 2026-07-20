@@ -64,6 +64,19 @@
   .disc.s{width:20px;height:20px;font-size:10px} .disc.m{width:26px;height:26px;font-size:11px}
   .disc.l{width:31px;height:31px} .disc.x{width:37px;height:37px;font-size:14px}
 
+  /* этюды */
+  .study{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0;
+    display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .study .q{flex:1;min-width:220px}
+  .study .q .ask{font-weight:700;margin:0 0 6px}
+  .study details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  .study summary{cursor:pointer;color:var(--brass);font-weight:700;font-size:14px;list-style:none}
+  .study summary::-webkit-details-marker{display:none}
+  .study summary::before{content:'▶ '} .study details[open] summary::before{content:'▼ '}
+  .study .sol{margin-top:8px;font-size:14.5px}
+  .study .sol .mv{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--good)}
+  .lines-note{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;margin-top:6px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:1px 9px;background:var(--surface)}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
   @media(max-width:560px){.cols{grid-template-columns:1fr}.board{grid-template-columns:14px repeat(4,38px);grid-template-rows:repeat(4,38px) 14px}}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
@@ -180,6 +193,72 @@
     <p style="margin:.4em 0 0">Белые не «нападали в лоб», а тихо заняли <strong>три клетки одной линии</strong>,
       спрятав угрозу за чужой фишкой (<code>m b3</code>). Вилка сработала, потому что <code>Xa4</code>
       создала <strong>вторую</strong> линию — а закрыть можно было только одну.</p>
+  </div>
+
+  <div class="kick">Как это увидеть</div>
+  <h2>Как распознать назревающую вилку</h2>
+  <p>Вилка — это одна клетка, которая лежит на <strong>двух линиях сразу</strong>, и на обеих у тебя уже есть
+    фишки. Ход в неё грозит достроить <strong>обе</strong> линии — соперник закроет только одну.</p>
+
+  <div class="games">
+    <figure>
+      <div class="board" data-pos=".MsX.m..lxX....L" data-win="0"></div>
+      <figcaption>Клетка <code>a4</code> (отмечена) — на <b>верхнем ряду</b> <code>a4-b4-c4-d4</code>
+        <b>и</b> на диагонали <code>a4-b3-c2-d1</code>. На обеих у белых уже есть фишки → <code>Xa4</code>
+        грозит и той, и другой линии. Это вилка.</figcaption>
+    </figure>
+    <div class="q" style="min-width:220px">
+      <p class="ask">Как искать за доской:</p>
+      <ol style="margin:.2em 0 0">
+        <li>Найди свои линии, где уже <b>2 из 4</b> своих (или накрываемых) клеток.</li>
+        <li>Проверь, <b>пересекаются</b> ли две такие линии в одной пустой/накрываемой клетке.</li>
+        <li>Если да — ход в этот перекрёсток даёт <b>две</b> угрозы. Вилка.</li>
+      </ol>
+      <div class="lines-note">
+        <span class="chip">строка × столбец</span><span class="chip">строка × диагональ</span>
+        <span class="chip">столбец × диагональ</span><span class="chip">две диагонали (центр)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="kick">Этюды</div>
+  <h2>Ход белых — найди выигрыш</h2>
+  <p>Позиции из реальных партий движка. Подумай сам, потом раскрой ответ.</p>
+
+  <div class="study">
+    <figure>
+      <div class="board" data-pos="X...L.xx....XXx."></div>
+      <figcaption>Этюд 1 · выигрыш в 1 ход</figcaption>
+    </figure>
+    <div class="q">
+      <p class="ask">Белые ходят и выигрывают одним ходом. Где?</p>
+      <p>Подсказка: посмотри на <b>столбец a</b> — чего в нём не хватает?</p>
+      <details><summary>Показать решение</summary>
+        <div class="sol"><span class="mv">Ma2</span> — столбец <code>a</code> (<code>a1-a2-a3-a4</code>) собран.
+          У белых уже были <code>X a1</code>, <code>L a3</code>, <code>X a4</code> — оставалось занять <code>a2</code>.
+          <div class="board" data-pos="X...L.xxM...XXx." data-win="0,4,8,12" style="margin-top:8px"></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="study">
+    <figure>
+      <div class="board" data-pos="Xs..l....XL.xM.m"></div>
+      <figcaption>Этюд 2 · найди вилку</figcaption>
+    </figure>
+    <div class="q">
+      <p class="ask">Белые ходят. Есть двойная угроза — найди её.</p>
+      <p>Подсказка: клетка <code>b3</code> — на столбце <code>b</code> и на диагонали <code>a4-d1</code>.</p>
+      <details><summary>Показать решение</summary>
+        <div class="sol"><span class="mv">Xb3++</span> грозит сразу двумя линиями: <b>столбец b</b> (накрыть <code>b4</code>)
+          и <b>диагональ</b> <code>a4-b3-c2-d1</code> (накрыть <code>d1</code>). Чёрные закроют одно —
+          белые проводят другое: <span class="mv">b2xd1#</span>.
+          <div class="board" data-pos="Xs..lX...XL.xM.m" style="margin-top:8px"></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">после <code>Xb3++</code> — две угрозы разом</div>
+        </div>
+      </details>
+    </div>
   </div>
 
   <div class="kick">Ловушки</div>
