@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gobblet 4×4 — Практическое руководство</title>
+<style>
+  :root{
+    --bg:#ece7db; --surface:#fbf9f4; --ink:#241f18; --soft:#5a5145; --muted:#877b69;
+    --line:#d9cfba; --brass:#9a6b1f; --good:#2f8f5b; --bad:#c0492f;
+    --sq:#e6dcc4; --sq-d:#d8ccae; --hl:#f4e2b0;
+    --white:#efe6cf; --white-d:#cdbd94; --black:#2b2f36; --black-d:#0d0f12;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#14120e; --surface:#1c1913; --ink:#ece5d6; --soft:#c3b8a3; --muted:#8f836d;
+    --line:#332c20; --brass:#d9a441; --good:#57c98a; --bad:#e07a63;
+    --sq:#33302a; --sq-d:#3d392f; --hl:#4a3d1f;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 90px}
+  header{padding:56px 0 28px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);font-weight:700}
+  h1{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:600;font-size:clamp(30px,6vw,46px);
+    line-height:1.1;margin:.3em 0 .2em;letter-spacing:-.01em}
+  .lede{color:var(--soft);font-size:18px;max-width:60ch;margin:0}
+  h2{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:600;font-size:clamp(21px,3.4vw,27px);
+    margin:44px 0 6px;letter-spacing:-.01em}
+  h3{font-size:17px;margin:26px 0 4px}
+  .kick{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:700;margin-top:40px}
+  p{margin:12px 0} strong{color:var(--ink)}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--surface);
+    border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  ul,ol{padding-left:22px} li{margin:6px 0}
+  .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    padding:2px 7px;border-radius:999px;vertical-align:middle}
+  .tag.data{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good)}
+  .tag.rule{background:color-mix(in srgb,var(--brass) 22%,transparent);color:var(--brass)}
+  .callout{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--brass);
+    border-radius:10px;padding:14px 16px;margin:18px 0}
+  .callout.warn{border-left-color:var(--bad)}
+  .callout .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--brass)}
+  .callout.warn .lbl{color:var(--bad)}
+  table{border-collapse:collapse;width:100%;font-size:15px;margin:16px 0}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+
+  /* доски */
+  .games{display:flex;gap:22px;flex-wrap:wrap;margin:18px 0}
+  figure{margin:0}
+  figcaption{font-size:13px;color:var(--muted);margin-top:8px;max-width:24ch;line-height:1.45}
+  .board{display:inline-grid;grid-template-columns:14px repeat(4,44px);grid-template-rows:repeat(4,44px) 14px;
+    gap:3px;background:transparent}
+  .board .rk{grid-column:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace}
+  .board .fl{grid-row:6;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace}
+  .sq{background:var(--sq);border-radius:6px;display:grid;place-items:center}
+  .sq.dark{background:var(--sq-d)} .sq.win{background:var(--hl);box-shadow:inset 0 0 0 2px var(--brass)}
+  .disc{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;
+    box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 2px 3px rgba(255,255,255,.35),inset 0 -4px 7px rgba(0,0,0,.25)}
+  .disc.w{background:radial-gradient(circle at 34% 28%,#fffaf0,var(--white) 60%,var(--white-d));color:#4a4030}
+  .disc.b{background:radial-gradient(circle at 34% 28%,#737b86,var(--black) 60%,var(--black-d));color:#eef1f4}
+  .disc.s{width:20px;height:20px;font-size:10px} .disc.m{width:26px;height:26px;font-size:11px}
+  .disc.l{width:31px;height:31px} .disc.x{width:37px;height:37px;font-size:14px}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+  @media(max-width:560px){.cols{grid-template-columns:1fr}.board{grid-template-columns:14px repeat(4,38px);grid-template-rows:repeat(4,38px) 14px}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card h4{margin:0 0 6px;font-size:15px}
+  .card.do h4{color:var(--good)} .card.no h4{color:var(--bad)}
+  .card ul{margin:0;padding-left:18px} .card li{font-size:14.5px}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Gobblet · Classic 4×4 · практика по данным</div>
+    <h1>Как выигрывать в Gobblet 4×4</h1>
+    <p class="lede">Практическое руководство, выведенное из ~21 000 партий движка. Простые
+      правила по уровням соперника, чеклисты, ловушки и разобранная партия на диаграммах.</p>
+  </header>
+
+  <div class="kick">Что говорят данные</div>
+  <h2>Три факта, на которых стоит вся стратегия</h2>
+  <ol>
+    <li><strong>Первый ход почти не важен.</strong> <span class="tag data">данные</span> В чистой сильной
+      игре (hard vs hard, 1300 партий) центр, ребро и угол дают <strong>~50%</strong> одинаково — куда
+      ставить первую <code>X</code>, практически безразлично. Право хода тоже почти ничего не даёт (~50%).</li>
+    <li><strong>4×4 при сильной игре — ничейна.</strong> <span class="tag data">данные</span> Зеркало hard —
+      <strong>45% ничьих</strong>, белые ≈ чёрные. Решает не дебют и не цвет, а <em>точность</em>.</li>
+    <li><strong>Побеждают через вилку.</strong> <span class="tag rule">правило</span> Одну угрозу «3 в ряд»
+      соперник накроет; <strong>две сразу</strong> (<code>++</code>) — нет. <span class="tag data">данные</span>
+      вилкой кончаются <strong>~57–63%</strong> решительных партий. Даже в равной сильной игре (hard×hard) —
+      <strong>55%</strong> решительных партий содержат вилку, просто она вызревает долго (в среднем ~44 полухода),
+      а не за 6 ходов.</li>
+  </ol>
+  <div class="callout warn">
+    <div class="lbl">Поправка к прежнему отчёту</div>
+    <p style="margin:.4em 0 0">Ранний часовой прогон показывал «центр 58%». На объёме в 20× это <strong>не
+      подтвердилось</strong> — центр/ребро/угол выровнялись к ~50%. Тот перекос был шумом малой выборки.
+      Центр по-прежнему разумен (он в большем числе будущих вилок), но <em>решающего</em> преимущества не даёт.</p>
+  </div>
+
+  <div class="kick">Простые правила по уровням</div>
+  <h2>Три «набора правил» — от новичка до максимума</h2>
+
+  <h3>🟢 Уровень 1 — новички (человек-новичок, «Балбес», «Новичок»)</h3>
+  <p>Соперник ходит случайно или почти случайно и <strong>не создаёт угроз</strong>. Задача — не мешать себе.</p>
+  <ol>
+    <li>Спокойно строй свою линию (строка/столбец/диагональ) крупными фишками.</li>
+    <li>Как только у тебя <strong>две в ряд</strong> — ставь третью и грози; он редко закроет.</li>
+    <li><strong>Единственный способ проиграть — зевнуть самому.</strong> Перед каждым ходом проверь: не даёшь ли ты сопернику 3 в ряд.</li>
+  </ol>
+
+  <h3>🟡 Уровень 2 — крепкие (человек-любитель, «Клубный», «Средний»)</h3>
+  <p>Соперник видит угрозы на 1–3 полухода и парирует их. Прямая атака не проходит — нужна <strong>вилка</strong>.</p>
+  <ol>
+    <li>Не давай <em>одиночную</em> угрозу — он её накроет и получит темп. Копи, чтобы выстрелить <strong>двумя сразу</strong>.</li>
+    <li>Ищи <strong>пересечение двух линий</strong> (клетка, входящая в строку и диагональ) — заготовка вилки.</li>
+    <li>Против «Клубного» (глубина 2) работают <strong>отложенные вилки и вскрытия</strong> — комбинации на 3+ полухода он не видит.</li>
+    <li>Держи одну крупную фишку в резерве под защиту.</li>
+  </ol>
+
+  <h3>🔴 Уровень 3 — максимум («Сильный», сильный человек)</h3>
+  <p>Тактику на 4 полухода он считает и парирует. Данные: конвертирует быстро (~25 полуходов), зеркала часто ничейны.</p>
+  <ol>
+    <li><strong>Играй на ничью как на успех.</strong> 4×4 при точной игре ничейна — не форсируй, не подставляйся.</li>
+    <li>Единственные шансы — <strong>за горизонтом</strong>: угрозы, созревающие позже 4 полуходов (длинные цепочки вскрытий, накопление лишних <code>X</code>).</li>
+    <li>Считай <strong>материал крупных</strong> (<code>L</code>/<code>X</code>): у кого больше свободных больших — тот накрывает угрозы. Не разменивай их впустую.</li>
+    <li>Не отдавай инициативу разменом — темп в равной позиции дороже фигуры.</li>
+  </ol>
+
+  <div class="kick">Чеклисты</div>
+  <h2>Перед каждым ходом и в защите</h2>
+  <div class="cols">
+    <div class="card do">
+      <h4>Мой ход — по порядку</h4>
+      <ul>
+        <li>Могу выиграть сейчас (3→4)? Выигрывай.</li>
+        <li>Могу поставить <strong>вилку</strong> (две угрозы)? Ставь.</li>
+        <li>Грозит ли соперник? Накрой угрозу.</li>
+        <li>Мой сдвиг ничего не <strong>вскрывает</strong>? (что под фишкой?)</li>
+        <li>Иначе — усиль позицию к центру/пересечению линий.</li>
+      </ul>
+    </div>
+    <div class="card no">
+      <h4>Защита</h4>
+      <ul>
+        <li>У соперника 3 в ряд? <strong>Накрой</strong> одну большей фишкой.</li>
+        <li>Из резерва накрыть чужую можно <em>только</em> если она в тройке.</li>
+        <li>Нет накрытия? Займи 4-ю клетку линии своей фишкой.</li>
+        <li>Две угрозы разом = вилка: закрыть нельзя — не допускай её заранее.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="kick">Разбор партии</div>
+  <h2>Вилка в 6 ходов: hard × club (из базы)</h2>
+  <p>Реальная партия из ночного прогона. Белые (сильный движок) готовят диагональ
+    <code>a4-b3-c2-d1</code> и на 5-м ходу ставят <strong>двойную угрозу</strong> — чёрные закрывают одну, мат.</p>
+
+  <div class="games">
+    <figure>
+      <div class="board" data-pos=".MsX.m..lxX....L"></div>
+      <figcaption><b>До вилки.</b> У белых <code>X d4</code>, <code>X c2</code>, <code>L d1</code> — три четверти диагонали, мешает лишь чёрная <code>m b3</code>.</figcaption>
+    </figure>
+    <figure>
+      <div class="board" data-pos="XMsX.m..lxX....L"></div>
+      <figcaption><b>5. Xa4++</b> — двойная угроза: (1) <code>d4→b3</code> накрывает <code>m</code> и достраивает диагональ; (2) верхний ряд <code>a4-b4-c4-d4</code>. Одним ходом не закрыть.</figcaption>
+    </figure>
+    <figure>
+      <div class="board" data-pos="XMs..X.xlxX....L" data-win="0,5,10,15"></div>
+      <figcaption><b>6. d4xb3#</b> — <code>X</code> с <code>d4</code> накрывает <code>m</code> на <code>b3</code>, диагональ <code>a4-b3-c2-d1</code> собрана. Победа.</figcaption>
+    </figure>
+  </div>
+  <div class="callout">
+    <div class="lbl">Что отсюда взять</div>
+    <p style="margin:.4em 0 0">Белые не «нападали в лоб», а тихо заняли <strong>три клетки одной линии</strong>,
+      спрятав угрозу за чужой фишкой (<code>m b3</code>). Вилка сработала, потому что <code>Xa4</code>
+      создала <strong>вторую</strong> линию — а закрыть можно было только одну.</p>
+  </div>
+
+  <div class="kick">Ловушки</div>
+  <h2>Два приёма, которые ставят соперника в проигрыш</h2>
+  <div class="cols">
+    <div class="card">
+      <h4>Вилка на пересечении</h4>
+      <p style="font-size:14.5px;margin:.2em 0 0">Займи клетку, входящую в <strong>две</strong> потенциальные линии
+        (напр. центр — он в строке, столбце и диагонали). Когда обе линии по «2 из 4» — следующий ход грозит
+        достроить любую. Соперник закроет одну, ты проводишь другую.</p>
+    </div>
+    <div class="card">
+      <h4>Ловушка вскрытия</h4>
+      <p style="font-size:14.5px;margin:.2em 0 0">Спрячь свою фишку <strong>под чужую</strong> на линии. Когда
+        сопернику придётся сдвинуть свою верхнюю (или ты вынудишь его), под ней вскроется твоя фишка — и линия
+        достроится «сама». Мелкий движок (глубина ≤ 2) этого за 2 хода не видит.</p>
+    </div>
+  </div>
+
+  <div class="kick">Карманная шпаргалка</div>
+  <h2>Одним экраном</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Соперник</th><th>Ключ к победе</th></tr></thead>
+    <tbody>
+      <tr><td>Балбес / Новичок</td><td>Строй линию, не зевай. Победа за считанные ходы.</td></tr>
+      <tr><td>Любитель</td><td>Не давай одиночную угрозу — сразу вилку за 2 хода (он не планирует).</td></tr>
+      <tr><td>Клубный (гл. 2)</td><td>Отложенные вилки и вскрытия — комбинации 3+ он не видит.</td></tr>
+      <tr><td>Средний (гл. 3)</td><td>Ловушки 4+ полухода, игра на материал и горизонт.</td></tr>
+      <tr><td>Сильный (гл. 4)</td><td>Играй на ничью; шансы только за горизонтом. Не отдавай инициативу.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <footer>
+    Нотация: поля <code>a1…</code>, размеры <code>S·M·L·X</code>; <code>Lc3</code> — из резерва,
+    <code>c3-d4</code> — ход, <code>x</code> — накрытие, <code>+</code> шах, <code>++</code> вилка, <code>#</code> победа.
+    Данные — self-play (~21k партий). Диаграммы: белые = светлые фишки, чёрные = тёмные; размер = буква.
+    Полнее: <code>docs/report-4x4-ru.md</code>, <code>docs/strategy.md</code>.
+  </footer>
+</div>
+
+<script>
+  // Рендер диаграмм из строки 16 символов (rank4→rank1, файлы a→d):
+  // '.' пусто; ЗАГЛАВНЫЕ = белые, строчные = чёрные; S/M/L/X — размер.
+  const FILES = ['a','b','c','d'];
+  document.querySelectorAll('.board[data-pos]').forEach(el => {
+    const pos = el.dataset.pos;
+    const win = (el.dataset.win || '').split(',').filter(x=>x!=='').map(Number);
+    el.innerHTML = '';
+    for (let r = 0; r < 4; r++) {
+      const rk = document.createElement('div'); rk.className='rk'; rk.textContent = 4 - r; el.appendChild(rk);
+      for (let c = 0; c < 4; c++) {
+        const i = r*4 + c;
+        const sq = document.createElement('div');
+        sq.className = 'sq' + (((r+c)%2)?' dark':'') + (win.includes(i)?' win':'');
+        const ch = pos[i];
+        if (ch && ch !== '.') {
+          const white = ch === ch.toUpperCase();
+          const size = ch.toUpperCase();
+          const zc = {S:'s',M:'m',L:'l',X:'x'}[size];
+          const d = document.createElement('div');
+          d.className = 'disc ' + (white?'w':'b') + ' ' + zc;
+          d.textContent = size;
+          sq.appendChild(d);
+        }
+        el.appendChild(sq);
+      }
+    }
+    // нижний ряд подписей файлов
+    const corner = document.createElement('div'); corner.className='fl'; corner.style.gridColumn='1'; el.appendChild(corner);
+    for (let c = 0; c < 4; c++) { const fl = document.createElement('div'); fl.className='fl'; fl.textContent = FILES[c]; el.appendChild(fl); }
+  });
+</script>
+</body>
+</html>
