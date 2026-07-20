@@ -1,7 +1,20 @@
-// ИИ на alpha-beta с упорядочиванием ходов поверхностной оценкой.
-import { topOf, cloneState, applyMove, generateMoves } from './engine.js';
+// ИИ на alpha-beta с упорядочиванием ходов поверхностной оценкой
+// и транспозиционной таблицей на симметрийном canonicalKey.
+import { topOf, cloneState, applyMove, generateMoves, canonicalKey } from './engine.js';
 
 export const WIN_SCORE = 100000;
+
+// ---- Транспозиционная таблица ----
+// Ключ — canonicalKey (8 симметрий доски). Значение — с точки зрения игрока `me`,
+// поэтому таблица валидна, пока `me` не сменился; при смене — сбрасываем.
+// flag: 0 EXACT, 1 LOWER (истина ≥ value), 2 UPPER (истина ≤ value).
+const TT_EXACT = 0, TT_LOWER = 1, TT_UPPER = 2, TT_CAP = 1_500_000;
+let TT = new Map();
+let TT_ME = -1;
+let TT_ON = true;
+export function ttStats() { return { size: TT.size, me: TT_ME }; }
+export function ttReset() { TT = new Map(); TT_ME = -1; }
+export function setTT(on) { TT_ON = !!on; if (!on) ttReset(); } // для бенчмарка/сравнения
 
 export function evaluate(state, me) {
   const opp = 1 - me;
@@ -27,10 +40,23 @@ export function evaluate(state, me) {
 }
 
 export function search(state, depth, alpha, beta, me) {
+  if (me !== TT_ME) { TT = new Map(); TT_ME = me; } // таблица валидна только для этого me
   if (state.winner !== null) {
     return state.winner === me ? WIN_SCORE - (20 - depth) : -WIN_SCORE + (20 - depth);
   }
   if (depth === 0) return evaluate(state, me);
+
+  const alphaOrig = alpha, betaOrig = beta;
+  const key = TT_ON ? canonicalKey(state) : null;
+  if (TT_ON) {
+    const e = TT.get(key);
+    if (e && e.depth >= depth) {
+      if (e.flag === TT_EXACT) return e.value;
+      if (e.flag === TT_LOWER) { if (e.value > alpha) alpha = e.value; }
+      else if (e.value < beta) beta = e.value;         // TT_UPPER
+      if (alpha >= beta) return e.value;
+    }
+  }
 
   const p = state.turn;
   const moves = generateMoves(state, p);
@@ -42,25 +68,31 @@ export function search(state, depth, alpha, beta, me) {
   });
   scored.sort((a, b) => b.s - a.s);
 
+  let best;
   if (p === me) {
-    let best = -Infinity;
+    best = -Infinity;
     for (const { c } of scored) {
       const val = search(c, depth - 1, alpha, beta, me);
       if (val > best) best = val;
       if (best > alpha) alpha = best;
       if (alpha >= beta) break;
     }
-    return best;
   } else {
-    let best = Infinity;
+    best = Infinity;
     for (const { c } of scored) {
       const val = search(c, depth - 1, alpha, beta, me);
       if (val < best) best = val;
       if (best < beta) beta = best;
       if (alpha >= beta) break;
     }
-    return best;
   }
+
+  if (TT_ON) {
+    const flag = best <= alphaOrig ? TT_UPPER : (best >= betaOrig ? TT_LOWER : TT_EXACT);
+    if (TT.size > TT_CAP) TT.clear();
+    TT.set(key, { depth, value: best, flag });
+  }
+  return best;
 }
 
 // Топ-N лучших ходов для игрока me (для режима подсказок).
