@@ -1,0 +1,216 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/><title>Gobblet 4×4 — Задачник</title>
+<style>
+:root{--bg:#ece7db;--surface:#fbf9f4;--ink:#241f18;--soft:#5a5145;--muted:#877b69;--line:#d9cfba;
+--brass:#9a6b1f;--good:#2f8f5b;--sq:#e6dcc4;--sq-d:#d8ccae;--white:#efe6cf;--white-d:#cdbd94;--black:#2b2f36;--black-d:#0d0f12}
+@media(prefers-color-scheme:dark){:root{--bg:#14120e;--surface:#1c1913;--ink:#ece5d6;--soft:#c3b8a3;--muted:#8f836d;
+--line:#332c20;--brass:#d9a441;--good:#57c98a;--sq:#33302a;--sq-d:#3d392f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px 80px}
+header{padding:48px 0 20px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);font-weight:700}
+h1{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:600;font-size:clamp(28px,6vw,44px);margin:.3em 0 .2em}
+.lede{color:var(--soft);max-width:60ch}
+h2{font-family:"Iowan Old Style",Palatino,Georgia,serif;margin:40px 0 4px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:16px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card .who{font-size:13px;color:var(--muted);margin:8px 0 4px}
+.card details{margin-top:6px;border-top:1px dashed var(--line);padding-top:6px}
+.card summary{cursor:pointer;color:var(--brass);font-weight:700;font-size:14px;list-style:none}
+.card summary::-webkit-details-marker{display:none}.card summary::before{content:'▶ '}
+.card details[open] summary::before{content:'▼ '}
+.card .sol .mv{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--good)}
+.play{display:inline-block;margin-top:10px;background:var(--brass);color:#fff;text-decoration:none;
+font-weight:700;font-size:13px;padding:6px 12px;border-radius:8px}
+.board{display:inline-grid;grid-template-columns:14px repeat(4,42px);grid-template-rows:repeat(4,42px) 14px;gap:3px}
+.board .rk,.board .fl{display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace}
+.board .rk{grid-column:1}.board .fl{grid-row:6}
+.sq{background:var(--sq);border-radius:6px;display:grid;place-items:center;position:relative}
+.sq.dark{background:var(--sq-d)}
+.disc{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;
+box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 2px 3px rgba(255,255,255,.35),inset 0 -4px 7px rgba(0,0,0,.25)}
+.disc.w{background:radial-gradient(circle at 34% 28%,#fffaf0,var(--white) 60%,var(--white-d));color:#4a4030}
+.disc.b{background:radial-gradient(circle at 34% 28%,#737b86,var(--black) 60%,var(--black-d));color:#eef1f4}
+.disc.s{width:19px;height:19px;font-size:9px}.disc.m{width:25px;height:25px;font-size:10px}.disc.l{width:29px;height:29px}.disc.x{width:35px;height:35px;font-size:13px}
+.under{position:absolute;bottom:1px;left:0;right:0;display:flex;gap:1px;justify-content:center;pointer-events:none}
+.pip{width:11px;height:11px;border-radius:50%;font-size:7px;line-height:11px;text-align:center;font-weight:800;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.pip.w{background:var(--white-d);color:#4a4030}.pip.b{background:var(--black);color:#eef1f4}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+</style></head><body><div class="wrap">
+<header><div class="eyebrow">Gobblet · Classic 4×4 · задачник</div>
+<h1>Этюды: ход — и выигрыш</h1>
+<p class="lede">Позиции из реальных партий, <b>проверенные солвером</b> на форсированный мат. Подумай сам,
+раскрой решение, или нажми «Играть» — позиция откроется в игре (hotseat), сыграй её сам.</p></header>
+<h2>Мат в 1 ход</h2><div class="grid"><div class="card">
+    <div class="board" data-pos="X/-/-/-/l/m/x/-/s/-/X/-/-/X/-/-"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xd3</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6MX1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdXSwiaGFuZHMiOltbWzEsMiwzXSxbMSwyLDNdLFsxLDIsM11dLFtbXSxbMSwyLDMsNF0sWzEsMiwzLDRdXV0sInR1cm4iOjF9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="X/-/-/l/-/-/X/X/m/-/x/-/-/l/x/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Sa1</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dXSwiaGFuZHMiOltbWzEsMiwzXSxbMSwyLDNdLFsxLDIsM11dLFtbMV0sWzEsMl0sWzEsMiwzXV1dLCJ0dXJuIjoxfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="X/m/-/-/-/-/Lx/-/X/x/-/-/Lx/-/X/l"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Sd4</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFtdLFtdLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW10sW3sicGxheWVyIjowLCJzaXplIjo0fV0sW3sicGxheWVyIjoxLCJzaXplIjozfV1dLCJoYW5kcyI6W1tbMSwyXSxbMSwyXSxbMSwyLDNdXSxbWzFdLFsxLDIsM10sWzEsMiwzXV1dLCJ0dXJuIjoxfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/L/-/-/-/m/x/X/x/M/l/X/LX/-/-/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Sa4</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XV0sImhhbmRzIjpbW1sxXSxbMSwyXSxbMSwyLDNdXSxbWzFdLFsxLDIsM10sWzEsMiwzXV1dLCJ0dXJuIjoxfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="X/-/-/L/X/x/L/-/x/lX/-/-/-/Sx/M/-"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Ma1</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6M30seyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjF9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW3sicGxheWVyIjowLCJzaXplIjoyfV0sW11dLCJoYW5kcyI6W1tbXSxbMSwyXSxbMSwyLDNdXSxbWzEsMl0sWzEsMiwzXSxbMSwyLDNdXV0sInR1cm4iOjB9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="sm/l/-/X/x/-/m/-/L/-/X/x/l/X/-/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">d2xa2</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6MX0seyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XV0sImhhbmRzIjpbW1sxLDJdLFsxLDIsM10sWzEsMiwzXV0sW1tdLFsxXSxbMSwyLDNdXV0sInR1cm4iOjF9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="l/S/-/X/L/-/X/-/x/x/Lx/M/m/-/-/M"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Lxd2</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9XV0sImhhbmRzIjpbW1tdLFsxXSxbMSwyLDMsNF1dLFtbMV0sWzEsMiwzXSxbMSwyLDNdXV0sInR1cm4iOjF9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="M/-/-/x/-/Lx/mX/-/-/-/x/-/lX/S/m/lX"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">c3xc1</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6Mn1dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9LHsicGxheWVyIjowLCJzaXplIjo0fV0sW10sW10sW10sW3sicGxheWVyIjoxLCJzaXplIjo0fV0sW10sW3sicGxheWVyIjoxLCJzaXplIjozfSx7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFt7InBsYXllciI6MSwic2l6ZSI6M30seyJwbGF5ZXIiOjAsInNpemUiOjR9XV0sImhhbmRzIjpbW1tdLFsxLDIsM10sWzEsMiwzXV0sW1sxXSxbMV0sWzEsMiwzXV1dLCJ0dXJuIjowfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="MlX/-/s/m/-/x/l/-/X/x/-/-/X/l/L/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Mb4</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjN9LHsicGxheWVyIjowLCJzaXplIjo0fV0sW10sW3sicGxheWVyIjoxLCJzaXplIjoxfV0sW3sicGxheWVyIjoxLCJzaXplIjoyfV0sW10sW3sicGxheWVyIjoxLCJzaXplIjo0fV0sW3sicGxheWVyIjoxLCJzaXplIjozfV0sW10sW3sicGxheWVyIjowLCJzaXplIjo0fV0sW3sicGxheWVyIjoxLCJzaXplIjo0fV0sW10sW10sW3sicGxheWVyIjowLCJzaXplIjo0fV0sW3sicGxheWVyIjoxLCJzaXplIjozfV0sW3sicGxheWVyIjowLCJzaXplIjozfV0sW3sicGxheWVyIjoxLCJzaXplIjo0fV1dLCJoYW5kcyI6W1tbMV0sWzEsMiwzXSxbMSwyLDNdXSxbW10sWzEsMl0sWzEsMl1dXSwidHVybiI6MX0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="L/-/X/X/-/-/L/-/-/Sm/x/x/Ml/Lx/l/X"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Mb4</span> — далее форсированный мат в 1.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6MX0seyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9LHsicGxheWVyIjoxLCJzaXplIjozfV0sW3sicGxheWVyIjowLCJzaXplIjozfSx7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dXSwiaGFuZHMiOltbW10sWzEsMl0sWzEsMl1dLFtbMV0sWzEsMl0sWzEsMiwzXV1dLCJ0dXJuIjowfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div></div><h2>Мат в 2 хода</h2><div class="grid"><div class="card">
+    <div class="board" data-pos="lx/-/-/X/-/-/-/x/-/-/M/X/L/-/X/-"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">d2-c3</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbXSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXV0sImhhbmRzIjpbW1sxXSxbMSwyLDNdLFsxLDIsM11dLFtbMSwyXSxbMSwyLDNdLFsxLDIsMyw0XV1dLCJ0dXJuIjowfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="s/l/-/-/-/X/m/-/-/-/X/x/l/X/-/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xd4</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6MX1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFtdLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFtdLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dXSwiaGFuZHMiOltbWzEsMiwzXSxbMSwyLDNdLFsxLDIsM11dLFtbXSxbMSwyXSxbMSwyLDMsNF1dXSwidHVybiI6MX0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="l/S/-/X/L/-/X/-/-/x/Lx/-/m/-/-/M"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xa2</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9XV0sImhhbmRzIjpbW1tdLFsxLDJdLFsxLDIsMyw0XV0sW1sxXSxbMSwyLDNdLFsxLDIsMyw0XV1dLCJ0dXJuIjoxfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="L/-/-/lX/-/x/Sx/M/-/-/L/l/M/X/-/-"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xd1</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M30seyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjF9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW3sicGxheWVyIjowLCJzaXplIjoyfV0sW10sW10sW3sicGxheWVyIjowLCJzaXplIjozfV0sW3sicGxheWVyIjoxLCJzaXplIjozfV0sW3sicGxheWVyIjowLCJzaXplIjoyfV0sW3sicGxheWVyIjowLCJzaXplIjo0fV0sW10sW11dLCJoYW5kcyI6W1tbXSxbMV0sWzEsMiwzLDRdXSxbWzEsMl0sWzEsMl0sWzEsMiwzLDRdXV0sInR1cm4iOjB9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="L/-/-/lX/-/-/Sx/M/-/-/L/lX/M/-/-/x"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xa2</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M30seyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjF9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW3sicGxheWVyIjowLCJzaXplIjoyfV0sW10sW10sW3sicGxheWVyIjowLCJzaXplIjozfV0sW3sicGxheWVyIjoxLCJzaXplIjozfSx7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn1dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dXSwiaGFuZHMiOltbW10sWzFdLFsxLDIsMyw0XV0sW1sxLDJdLFsxLDJdLFsxLDIsMyw0XV1dLCJ0dXJuIjowfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="X/l/x/-/sX/X/x/-/l/m/-/-/-/m/-/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">c4-a1</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6MX0seyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbXSxbXSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XV0sImhhbmRzIjpbW1sxLDIsM10sWzEsMiwzXSxbMSwyLDNdXSxbW10sWzFdLFsxLDIsM11dXSwidHVybiI6MX0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="M/-/l/X/-/-/X/x/X/Sx/x/-/-/L/-/L"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">d4-a1</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6Mn1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6MX0seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XV0sImhhbmRzIjpbW1tdLFsxLDJdLFsxLDIsM11dLFtbMSwyXSxbMSwyLDNdLFsxLDIsM11dXSwidHVybiI6MH0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/-/Mx/-/m/X/S/s/-/x/x/L/X/-/-/lX"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">a1xd3</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjF9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjF9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjN9LHsicGxheWVyIjowLCJzaXplIjo0fV1dLCJoYW5kcyI6W1tbXSxbMSwyLDNdLFsxLDIsM11dLFtbXSxbMSwyLDNdLFsxLDIsM11dXSwidHVybiI6MH0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/s/X/Ml/x/X/lX/-/m/-/x/-/-/-/Lx/m"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">a3-d2</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFt7InBsYXllciI6MSwic2l6ZSI6MX1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjN9LHsicGxheWVyIjowLCJzaXplIjo0fV0sW10sW3sicGxheWVyIjoxLCJzaXplIjoyfV0sW10sW3sicGxheWVyIjoxLCJzaXplIjo0fV0sW10sW10sW10sW3sicGxheWVyIjowLCJzaXplIjozfSx7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dXSwiaGFuZHMiOltbWzFdLFsxLDIsM10sWzEsMiwzXV0sW1tdLFsxXSxbMSwyLDNdXV0sInR1cm4iOjF9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="L/-/X/-/-/-/L/-/-/S/x/x/Ml/Lx/lX/X"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">c1-d4</span> — далее форсированный мат в 2.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW3sicGxheWVyIjoxLCJzaXplIjozfSx7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dXSwiaGFuZHMiOltbW10sWzEsMl0sWzEsMl1dLFtbMSwyXSxbMSwyXSxbMSwyLDNdXV0sInR1cm4iOjB9" target="_blank">▶ Играть с этой позиции</a>
+  </div></div><h2>Мат в 3 хода</h2><div class="grid"><div class="card">
+    <div class="board" data-pos="M/-/X/-/-/-/-/x/-/-/S/-/L/-/-/-"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xd4</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6Mn1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFtdLFtdXSwiaGFuZHMiOltbW10sWzEsMiwzLDRdLFsxLDIsMyw0XV0sW1sxLDIsM10sWzEsMiwzLDRdLFsxLDIsMyw0XV1dLCJ0dXJuIjowfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/-/-/s/x/-/l/L/-/X/m/-/x/-/X/-"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xa4</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6MX1dLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdXSwiaGFuZHMiOltbWzEsMl0sWzEsMiwzXSxbMSwyLDMsNF1dLFtbXSxbMSwyLDNdLFsxLDIsMyw0XV1dLCJ0dXJuIjoxfQ%3D%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/x/X/-/-/X/-/L/M/l/-/-/x/-/-/X"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">c4-c2</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6Mn1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dXSwiaGFuZHMiOltbWzFdLFsxLDIsM10sWzEsMiwzXV0sW1sxLDJdLFsxLDIsM10sWzEsMiwzLDRdXV0sInR1cm4iOjB9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="l/S/-/X/-/x/X/-/-/x/L/-/m/-/-/M"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Xb1</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6Mn1dXSwiaGFuZHMiOltbW10sWzEsMiwzXSxbMSwyLDMsNF1dLFtbMV0sWzEsMiwzXSxbMSwyLDMsNF1dXSwidHVybiI6MX0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/-/X/s/S/m/X/-/-/X/Ml/-/x/-/-/L"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">b2xc2</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6MX1dLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XV0sImhhbmRzIjpbW1tdLFsxLDIsM10sWzEsMiwzXV0sW1tdLFsxLDIsMyw0XSxbMSwyLDMsNF1dXSwidHVybiI6MH0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="Lx/x/X/-/-/-/-/s/-/l/-/X/x/mX/M/-"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">b4-a3</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbXSxbXSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjF9XSxbXSxbeyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjJ9LHsicGxheWVyIjowLCJzaXplIjo0fV0sW3sicGxheWVyIjowLCJzaXplIjoyfV0sW11dLCJoYW5kcyI6W1tbMV0sWzEsMiwzXSxbMSwyLDNdXSxbW10sWzEsMiwzXSxbMSwyLDNdXV0sInR1cm4iOjF9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="-/-/-/X/X/Mx/Lx/Lx/l/-/L/X/m/S/-/-"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">d4-b2</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1tdLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW3sicGxheWVyIjowLCJzaXplIjozfSx7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6M31dLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M31dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFt7InBsYXllciI6MCwic2l6ZSI6MX1dLFtdLFtdXSwiaGFuZHMiOltbW10sWzEsMl0sWzEsMl1dLFtbMV0sWzEsMiwzXSxbMSwyLDNdXV0sInR1cm4iOjB9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="Mx/-/X/Ml/S/-/Lx/-/m/X/X/-/-/Lx/-/S"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Ld2</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9LHsicGxheWVyIjoxLCJzaXplIjozfV0sW3sicGxheWVyIjowLCJzaXplIjoxfV0sW10sW3sicGxheWVyIjowLCJzaXplIjozfSx7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6Mn1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6NH1dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjF9XV0sImhhbmRzIjpbW1tdLFtdLFsxLDIsM11dLFtbMV0sWzEsMiwzXSxbMSwyLDNdXV0sInR1cm4iOjB9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="l/-/-/Sx/L/sX/m/-/Lx/Ml/-/-/X/-/X/x"></div>
+    <div class="who">Чёрные ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">Ld2</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6M31dLFtdLFtdLFt7InBsYXllciI6MCwic2l6ZSI6MX0seyJwbGF5ZXIiOjEsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjF9LHsicGxheWVyIjowLCJzaXplIjo0fV0sW3sicGxheWVyIjoxLCJzaXplIjoyfV0sW10sW3sicGxheWVyIjowLCJzaXplIjozfSx7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6Mn0seyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjEsInNpemUiOjR9XV0sImhhbmRzIjpbW1tdLFsxLDJdLFsxLDIsM11dLFtbXSxbMSwyXSxbMSwyLDNdXV0sInR1cm4iOjF9" target="_blank">▶ Играть с этой позиции</a>
+  </div><div class="card">
+    <div class="board" data-pos="sl/-/-/X/L/L/-/Mx/-/M/-/mx/-/x/LX/X"></div>
+    <div class="who">Белые ходят — выигрыш форсированно</div>
+    <details><summary>Решение</summary><div class="sol">Ключевой ход: <span class="mv">c1xa4</span> — далее форсированный мат в 3.</div></details>
+    <a class="play" href="../dist/gobblet.html#pzl=eyJ2IjoiY2xhc3NpYzQiLCJib2FyZCI6W1t7InBsYXllciI6MSwic2l6ZSI6MX0seyJwbGF5ZXIiOjEsInNpemUiOjN9XSxbXSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjN9XSxbXSxbeyJwbGF5ZXIiOjAsInNpemUiOjJ9LHsicGxheWVyIjoxLCJzaXplIjo0fV0sW10sW3sicGxheWVyIjowLCJzaXplIjoyfV0sW10sW3sicGxheWVyIjoxLCJzaXplIjoyfSx7InBsYXllciI6MSwic2l6ZSI6NH1dLFtdLFt7InBsYXllciI6MSwic2l6ZSI6NH1dLFt7InBsYXllciI6MCwic2l6ZSI6M30seyJwbGF5ZXIiOjAsInNpemUiOjR9XSxbeyJwbGF5ZXIiOjAsInNpemUiOjR9XV0sImhhbmRzIjpbW1sxXSxbMV0sWzEsMl1dLFtbXSxbMSwyLDNdLFsxLDIsM11dXSwidHVybiI6MH0%3D" target="_blank">▶ Играть с этой позиции</a>
+  </div></div>
+<footer>Нотация: <code>Lc3</code> — из резерва, <code>c3-d4</code> — ход, <code>x</code> — накрытие,
+<code>+</code> шах, <code>++</code> вилка, <code>#</code> победа. Пипс под фишкой = нижняя матрёшка.
+Данные — self-play. «Играть» открывает <code>dist/gobblet.html</code> — собери его <code>npm run build</code>.</footer>
+</div><script>
+const FILES=['a','b','c','d'];
+const disc=(ch,cls)=>{const w=ch===ch.toUpperCase(),sz=ch.toUpperCase(),zc={S:'s',M:'m',L:'l',X:'x'}[sz];
+const d=document.createElement('div');d.className=cls+' '+(w?'w':'b')+' '+zc;d.textContent=sz;return d;};
+document.querySelectorAll('.board[data-pos]').forEach(el=>{
+const raw=el.dataset.pos;
+const cells=raw.includes('/')?raw.split('/').map(c=>(c==='-'||c==='.')?[]:[...c]):[...raw].map(c=>(c==='.'||c==='-')?[]:[c]);
+el.innerHTML='';
+for(let r=0;r<4;r++){const rk=document.createElement('div');rk.className='rk';rk.textContent=4-r;el.appendChild(rk);
+for(let c=0;c<4;c++){const i=r*4+c;const sq=document.createElement('div');sq.className='sq'+(((r+c)%2)?' dark':'');
+const st=cells[i]||[];if(st.length){sq.appendChild(disc(st[st.length-1],'disc'));
+if(st.length>1){const u=document.createElement('div');u.className='under';
+for(let k=0;k<st.length-1;k++){const ch=st[k];const p=document.createElement('div');p.className='pip '+(ch===ch.toUpperCase()?'w':'b');p.textContent=ch.toUpperCase();u.appendChild(p);}sq.appendChild(u);}}
+el.appendChild(sq);}}
+const cr=document.createElement('div');cr.className='fl';el.appendChild(cr);
+for(let c=0;c<4;c++){const fl=document.createElement('div');fl.className='fl';fl.textContent=FILES[c];el.appendChild(fl);}});
+</script></body></html>

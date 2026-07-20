@@ -1,6 +1,6 @@
 // Рендер и ввод. Знает про DOM; логику держит в движке/ИИ.
 import { VARIANTS, } from './variants.js';
-import { newGame, winLen, topOf, legalTargets, cloneState, applyMove, reserveSizes, threatsFor } from './engine.js';
+import { newGame, winLen, topOf, legalTargets, cloneState, applyMove, reserveSizes, threatsFor, computeZobrist } from './engine.js';
 import { topMoves, principalVariation, search, evaluate, WIN_SCORE } from './ai.js';
 import { LEVEL_ORDER, maxDepth, pickMove } from './players.js';
 import { moveCompact, checkSuffix, sizeLetter, setLabelStyle, squareName } from './notation.js';
@@ -764,6 +764,30 @@ function startNewGame() {
   maybeAIMove();
 }
 
+// Загрузить произвольную позицию (из задачника): доска+резервы+ход. Играется в hotseat.
+function loadStateData(data) {
+  const v = VARIANTS[data.v] || VARIANTS.classic4;
+  const s = newGame(v);
+  s.board = data.board.map(st => st.map(p => ({ player: p.player, size: p.size })));
+  s.hands = data.hands.map(h => h.map(st => st.slice()));
+  s.turn = data.turn | 0;
+  s.winner = null; s.winLine = null;
+  s.zh = computeZobrist(s);
+  UI.state = s; UI.history = []; UI.moves = []; UI.selected = null; UI.hints = [];
+  UI.busy = false; UI.draw = false; UI.coachWarn = null;
+  UI.mode = 'hotseat';
+  const mSel = $('mode'); if (mSel) mSel.value = 'hotseat';
+  const vSel = $('variant'); if (vSel) vSel.value = v.id;
+  render(); scheduleAnalysis();
+}
+// Позиция из URL: #pzl=<base64 JSON {v,board,hands,turn}>
+function tryLoadFromHash() {
+  const m = /pzl=([^&]+)/.exec(location.hash || '');
+  if (!m) return false;
+  try { loadStateData(JSON.parse(atob(decodeURIComponent(m[1])))); return true; }
+  catch (_) { return false; }
+}
+
 // Играть/Пауза для режима Комп↔Комп.
 function playPause() {
   if (UI.mode !== 'cvc') return;
@@ -833,5 +857,6 @@ export function initUI() {
   });
 
   applyStaticI18n();
-  startNewGame();
+  window.addEventListener('hashchange', () => { if (!tryLoadFromHash()) startNewGame(); });
+  if (!tryLoadFromHash()) startNewGame();   // позиция из #pzl= или новая игра
 }
