@@ -76,6 +76,7 @@ export function newGame(v) {
     winner: null,
     winLine: null,
     lines: makeLines(v),
+    zh: [0, 0], // Zobrist-хэш (пустая доска, ход 0)
   };
 }
 
@@ -116,23 +117,31 @@ export function cloneState(state) {
     winner: state.winner,
     winLine: state.winLine,
     lines: state.lines,
+    zh: state.zh ? state.zh.slice() : [0, 0],
   };
 }
 
 // Применить ход (мутирует state). move: {kind:'hand'|'board', size, index?, to}
 export function applyMove(state, move) {
   const p = state.turn;
+  const Z = zobristTable(state.v);
+  const zh = state.zh || (state.zh = [0, 0]);
   let piece;
   if (move.kind === 'hand') {
     takeReserve(state.hands[p], move.size);
     piece = { player: p, size: move.size };
+    const z = Z.piece[move.to][move.size][p];        // фишка появилась на to
+    zh[0] ^= z[0]; zh[1] ^= z[1];
   } else {
     piece = state.board[move.index].pop();
+    const zf = Z.piece[move.index][piece.size][piece.player]; // ушла с index
+    const zt = Z.piece[move.to][piece.size][piece.player];    // легла на to
+    zh[0] ^= zf[0] ^ zt[0]; zh[1] ^= zf[1] ^ zt[1];
   }
   state.board[move.to].push(piece);
   const res = checkWinner(state, p);
   if (res) { state.winner = res.player; state.winLine = res.line; }
-  else { state.turn = 1 - p; }
+  else { state.turn = 1 - p; zh[0] ^= Z.turn[0]; zh[1] ^= Z.turn[1]; } // ход сменился
   return state;
 }
 
@@ -227,6 +236,33 @@ export function canonicalKeyColor(state) {
   const b = canonicalKey(swapped);
   return a < b ? a : b;
 }
+
+// ---- Zobrist-хэш: инкрементальный ключ позиции (для транспозиций) ----
+// Резерв не хэшируем — он выводится из доски. Ключ = XOR по фишкам доски + ход.
+// 64 бита как две 32-битных половины [hi, lo].
+const ZCACHE = {};
+const rnd32 = () => (Math.random() * 0x100000000) >>> 0;
+function zobristTable(v) {
+  const k = v.boardSize + 'x' + v.sizes;
+  if (ZCACHE[k]) return ZCACHE[k];
+  const cells = v.boardSize * v.boardSize;
+  const piece = [];
+  for (let c = 0; c < cells; c++) {
+    piece[c] = [];
+    for (let s = 0; s <= v.sizes; s++) piece[c][s] = [[rnd32(), rnd32()], [rnd32(), rnd32()]];
+  }
+  return (ZCACHE[k] = { piece, turn: [rnd32(), rnd32()] });
+}
+// Полный пересчёт (якорим корень поиска; дальше — инкрементально в applyMove).
+export function computeZobrist(state) {
+  const Z = zobristTable(state.v);
+  let hi = 0, lo = 0;
+  for (let c = 0; c < state.board.length; c++)
+    for (const pc of state.board[c]) { const z = Z.piece[c][pc.size][pc.player]; hi ^= z[0]; lo ^= z[1]; }
+  if (state.turn === 1) { hi ^= Z.turn[0]; lo ^= Z.turn[1]; }
+  return [hi >>> 0, lo >>> 0];
+}
+export function zobristKey(state) { return state.zh[0] + ',' + state.zh[1]; }
 
 // Все легальные ходы игрока p.
 export function generateMoves(state, p) {
