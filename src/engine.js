@@ -46,12 +46,13 @@ export function emptyHand(v) {
 // Верхняя (доступная) фишка стопки резерва.
 const topReserve = (st) => (st.length ? st[st.length - 1] : null);
 
-// Забрать из резерва одну фишку размера size (из любой подходящей стопки).
+// Забрать из резерва одну фишку размера size. Возвращает индекс стопки (для отката) или -1.
 export function takeReserve(hand, size) {
-  for (const st of hand) {
-    if (st.length && st[st.length - 1] === size) { st.pop(); return true; }
+  for (let i = 0; i < hand.length; i++) {
+    const st = hand[i];
+    if (st.length && st[st.length - 1] === size) { st.pop(); return i; }
   }
-  return false;
+  return -1;
 }
 
 // Клетки, входящие в линию с >=3 верхними фишками игрока opp (угроза).
@@ -121,29 +122,55 @@ export function cloneState(state) {
   };
 }
 
-// Применить ход (мутирует state). move: {kind:'hand'|'board', size, index?, to}
-export function applyMove(state, move) {
+// Сделать ход, вернув undo-инфо для отката (make/unmake — без клонирования).
+// move: {kind:'hand'|'board', size, index?, to}
+export function makeMove(state, move) {
   const p = state.turn;
   const Z = zobristTable(state.v);
   const zh = state.zh || (state.zh = [0, 0]);
+  const undo = { turn: p, winner: state.winner, winLine: state.winLine, reserveStack: -1, flipped: false };
   let piece;
   if (move.kind === 'hand') {
-    takeReserve(state.hands[p], move.size);
+    undo.reserveStack = takeReserve(state.hands[p], move.size); // индекс стопки для отката
     piece = { player: p, size: move.size };
-    const z = Z.piece[move.to][move.size][p];        // фишка появилась на to
+    const z = Z.piece[move.to][move.size][p];
     zh[0] ^= z[0]; zh[1] ^= z[1];
   } else {
     piece = state.board[move.index].pop();
-    const zf = Z.piece[move.index][piece.size][piece.player]; // ушла с index
-    const zt = Z.piece[move.to][piece.size][piece.player];    // легла на to
+    const zf = Z.piece[move.index][piece.size][piece.player];
+    const zt = Z.piece[move.to][piece.size][piece.player];
     zh[0] ^= zf[0] ^ zt[0]; zh[1] ^= zf[1] ^ zt[1];
   }
   state.board[move.to].push(piece);
   const res = checkWinner(state, p);
   if (res) { state.winner = res.player; state.winLine = res.line; }
-  else { state.turn = 1 - p; zh[0] ^= Z.turn[0]; zh[1] ^= Z.turn[1]; } // ход сменился
-  return state;
+  else { state.turn = 1 - p; zh[0] ^= Z.turn[0]; zh[1] ^= Z.turn[1]; undo.flipped = true; }
+  zh[0] >>>= 0; zh[1] >>>= 0;   // держим беззнаковыми (иначе ключи расходятся по знаку)
+  return undo;
 }
+
+// Откатить ход (обратный к makeMove). XOR сам себе обратен.
+export function unmakeMove(state, move, undo) {
+  const p = undo.turn;
+  const Z = zobristTable(state.v);
+  const zh = state.zh;
+  if (undo.flipped) { state.turn = p; zh[0] ^= Z.turn[0]; zh[1] ^= Z.turn[1]; }
+  state.winner = undo.winner; state.winLine = undo.winLine;
+  const piece = state.board[move.to].pop();               // снять поставленную фишку
+  if (move.kind === 'hand') {
+    const z = Z.piece[move.to][piece.size][p]; zh[0] ^= z[0]; zh[1] ^= z[1];
+    state.hands[p][undo.reserveStack].push(piece.size);   // вернуть в ту же стопку резерва
+  } else {
+    const zf = Z.piece[move.index][piece.size][piece.player];
+    const zt = Z.piece[move.to][piece.size][piece.player];
+    zh[0] ^= zf[0] ^ zt[0]; zh[1] ^= zf[1] ^ zt[1];
+    state.board[move.index].push(piece);                  // вернуть на исходную клетку
+  }
+  zh[0] >>>= 0; zh[1] >>>= 0;
+}
+
+// Совместимость: применить ход, мутируя state (для UI/self-play, без отката).
+export function applyMove(state, move) { makeMove(state, move); return state; }
 
 // Победитель с учётом правила «вскрытия»: приоритет у сделавшего ход;
 // иначе, если вскрылась линия соперника — побеждает соперник.
@@ -262,7 +289,7 @@ export function computeZobrist(state) {
   if (state.turn === 1) { hi ^= Z.turn[0]; lo ^= Z.turn[1]; }
   return [hi >>> 0, lo >>> 0];
 }
-export function zobristKey(state) { return state.zh[0] + ',' + state.zh[1]; }
+export function zobristKey(state) { return (state.zh[0] >>> 0) + ',' + (state.zh[1] >>> 0); }
 
 // Все легальные ходы игрока p.
 export function generateMoves(state, p) {

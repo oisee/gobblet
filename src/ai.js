@@ -1,6 +1,6 @@
 // ИИ на alpha-beta с упорядочиванием ходов поверхностной оценкой
 // и транспозиционной таблицей на симметрийном canonicalKey.
-import { topOf, cloneState, applyMove, generateMoves, zobristKey, computeZobrist } from './engine.js';
+import { topOf, cloneState, applyMove, generateMoves, makeMove, unmakeMove, zobristKey, computeZobrist } from './engine.js';
 
 export const WIN_SCORE = 100000;
 
@@ -68,12 +68,13 @@ export function search(state, depth, alpha, beta, me) {
   const moves = generateMoves(state, p);
   if (moves.length === 0) return evaluate(state, me);
 
+  // упорядочивание через make/unmake (без клонирования)
   const scored = moves.map(m => {
-    const c = applyMove(cloneState(state), m);
-    return { m, c, s: evaluate(c, p) };
+    const u = makeMove(state, m); const s = evaluate(state, p); unmakeMove(state, m, u);
+    return { m, s };
   });
   scored.sort((a, b) => b.s - a.s);
-  if (ttBest) { // лучший ход из TT — первым (главный ускоритель)
+  if (ttBest) { // лучший ход из TT — первым
     const i = scored.findIndex(x => moveEq(x.m, ttBest));
     if (i > 0) scored.unshift(scored.splice(i, 1)[0]);
   }
@@ -81,16 +82,20 @@ export function search(state, depth, alpha, beta, me) {
   let best, bestMove = null;
   if (p === me) {
     best = -Infinity;
-    for (const { m, c } of scored) {
-      const val = search(c, depth - 1, alpha, beta, me);
+    for (const { m } of scored) {
+      const u = makeMove(state, m);
+      const val = search(state, depth - 1, alpha, beta, me);
+      unmakeMove(state, m, u);
       if (val > best) { best = val; bestMove = m; }
       if (best > alpha) alpha = best;
       if (alpha >= beta) break;
     }
   } else {
     best = Infinity;
-    for (const { m, c } of scored) {
-      const val = search(c, depth - 1, alpha, beta, me);
+    for (const { m } of scored) {
+      const u = makeMove(state, m);
+      const val = search(state, depth - 1, alpha, beta, me);
+      unmakeMove(state, m, u);
       if (val < best) { best = val; bestMove = m; }
       if (best < beta) beta = best;
       if (alpha >= beta) break;
@@ -110,15 +115,16 @@ export function search(state, depth, alpha, beta, me) {
 export function topMoves(state, me, depth, n) {
   state.zh = computeZobrist(state);   // якорим корень: дальше zh инкрементально верен
   const moves = generateMoves(state, me);
-  // предварительная сортировка ускоряет отсечения в полном поиске
   const pre = moves.map(m => {
-    const c = applyMove(cloneState(state), m);
-    return { m, s: evaluate(c, me) };
+    const u = makeMove(state, m); const s = evaluate(state, me); unmakeMove(state, m, u);
+    return { m, s };
   });
   pre.sort((a, b) => b.s - a.s);
   const ranked = pre.map(({ m }) => {
-    const c = applyMove(cloneState(state), m);
-    return { move: m, score: search(c, depth - 1, -Infinity, Infinity, me) };
+    const u = makeMove(state, m);
+    const score = search(state, depth - 1, -Infinity, Infinity, me);
+    unmakeMove(state, m, u);
+    return { move: m, score };
   });
   ranked.sort((a, b) => b.score - a.score);
   return ranked.slice(0, n);
@@ -145,12 +151,14 @@ export function chooseAIMove(state, me, depth) {
   const moves = generateMoves(state, me);
   let bestMove = null, bestVal = -Infinity;
   const scored = moves.map(m => {
-    const c = applyMove(cloneState(state), m);
-    return { m, c, s: evaluate(c, me) };
+    const u = makeMove(state, m); const s = evaluate(state, me); unmakeMove(state, m, u);
+    return { m, s };
   });
   scored.sort((a, b) => b.s - a.s);
-  for (const { m, c } of scored) {
-    const val = search(c, depth - 1, -Infinity, Infinity, me);
+  for (const { m } of scored) {
+    const u = makeMove(state, m);
+    const val = search(state, depth - 1, -Infinity, Infinity, me);
+    unmakeMove(state, m, u);
     if (val > bestVal) { bestVal = val; bestMove = m; }
   }
   return bestMove;
