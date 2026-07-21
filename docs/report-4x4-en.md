@@ -32,6 +32,21 @@ findings** (with numbers), and **honest caveats**. Complements `docs/strategy.md
   **not the true value of the game.** Key takeaway: **you cannot conclude either "4×4 is a draw" or
   "white wins" — deeper search alone just flips the sign.** Only a real **solve** (with proper draws)
   or a **parity-independent evaluation** (quiescence) can settle it.
+
+- **Quiescence removes the artifact — depths converge (verified, 789 games).** If at the horizon we
+  extend "noisy" lines to quiet (win-now + forced response to a threat), even and odd depths **agree**:
+
+  | Depth | no Q (white/black/draws) | with Q |
+  |---|---|---|
+  | 2 (even) | 23 / 24 / **53** | 46 / 39 / 16 |
+  | 3 (odd) | **56** / 40 / 4 | 48 / 42 / 10 |
+
+  The huge gap (53% draws vs 4%) **collapses**: with quiescence both depths give nearly the same —
+  **white ~47% / black ~40% / draws ~13%**. Conclusion: the oscillation was an **evaluation artifact**
+  (horizon effect), not a property of the game; but once removed, a **small real first-move edge**
+  remains (~+7 pts for white) with moderate draws. This is our **most reliable** estimate of the 4×4
+  value so far. Caveat: the eval is still shallow — quiescence at depth 4–5, or a full solve, would sharpen it.
+
 - **Forks are the main winning mechanism, at every level.** A fork (`++`) ends **57–63%** of
   decisive games. By level gap: gap 0 — 56.5%, gap 1 — 60.9%, gap 2 — 63.2%, gap 3 — 49.0%.
   Even **hard×hard: 55%** of decisive games contain a fork — it just takes long to mature
